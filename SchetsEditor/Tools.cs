@@ -99,7 +99,7 @@ namespace SchetsEditor
 
     public class VolCircleTool : CircleTool
     {
-        public override string ToString() { return "gesloten circel"; }
+        public override string ToString() { return "circelV"; }
 
         public override void Compleet(Graphics g, Point p1, Point p2)
         {
