@@ -87,6 +87,26 @@ namespace SchetsEditor
         }
     }
 
+    public class CircleTool : TweepuntTool
+    {
+        public override string ToString() { return "circel"; }
+
+        public override void Bezig(Graphics g, Point p1, Point p2)
+        {
+            g.DrawEllipse(MaakPen(kwast, 3), p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
+        }
+    }
+
+    public class VolCircleTool : CircleTool
+    {
+        public override string ToString() { return "gesloten circel"; }
+
+        public override void Compleet(Graphics g, Point p1, Point p2)
+        {
+            g.FillEllipse(kwast, p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
+        }
+    }
+
     public class RechthoekTool : TweepuntTool
     {
         public override string ToString() { return "kader"; }
