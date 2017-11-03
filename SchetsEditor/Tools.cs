@@ -37,7 +37,7 @@ namespace SketchEditor
         {
             if (c >= 32)
             {
-                Graphics gr = s.MaakBitmapGraphics();
+                Graphics gr = s.CreateBitmapGraphics();
                 Font font = new Font("Tahoma", 40);
                 string tekst = c.ToString();
                 SizeF sz = 
@@ -74,7 +74,7 @@ namespace SketchEditor
         }
         public override void MouseUp(SketchControl s, Point p)
         {   base.MouseUp(s, p);
-            this.Finished(s.MaakBitmapGraphics(), this.startingPoint, p);
+            this.Finished(s.CreateBitmapGraphics(), this.startingPoint, p);
             s.Invalidate();
         }
         public override void Letter(SketchControl s, char c)

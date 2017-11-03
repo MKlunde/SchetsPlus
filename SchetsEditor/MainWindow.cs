@@ -8,8 +8,8 @@ namespace SketchEditor
     {
         MenuStrip menuStrip;
 
-        public MainWindow()
-        {   this.ClientSize = new Size(800, 600);
+        public MainWindow(){
+            this.ClientSize = new Size(800, 600);
             menuStrip = new MenuStrip();
             this.Controls.Add(menuStrip);
             this.CreateFileMenu();
@@ -18,34 +18,34 @@ namespace SketchEditor
             this.IsMdiContainer = true;
             this.MainMenuStrip = menuStrip;
         }
-        private void CreateFileMenu()
-        {   ToolStripDropDownItem menu;
+        private void CreateFileMenu() {
+            ToolStripDropDownItem menu;
             menu = new ToolStripMenuItem("File");
             menu.DropDownItems.Add("Nieuw", null, this.NewSketchWin);
             menu.DropDownItems.Add("Exit", null, this.Exit);
             menuStrip.Items.Add(menu);
         }
-        private void CreateHelpMenu()
-        {   ToolStripDropDownItem menu;
+        private void CreateHelpMenu() {
+            ToolStripDropDownItem menu;
             menu = new ToolStripMenuItem("Help");
             menu.DropDownItems.Add("Over \"Schets\"", null, this.About);
             menuStrip.Items.Add(menu);
         }
-        private void About(object o, EventArgs ea)
-        {   MessageBox.Show("Schets versie 1.0\n(c) UU Informatica 2010"
+        private void About(object o, EventArgs ea) {
+            MessageBox.Show("SchetsPlus versie 0.1\nDoor Menno Klunder en Mats Gottenbos\nGebaseerd op Schets versie 1.0 - (c) UU Informatica 2010"
                            , "Over \"Schets\""
                            , MessageBoxButtons.OK
                            , MessageBoxIcon.Information
                            );
         }
 
-        private void NewSketchWin(object sender, EventArgs e)
-        {   SketchWin s = new SketchWin();
+        private void NewSketchWin(object sender, EventArgs e) {
+            SketchWin s = new SketchWin();
             s.MdiParent = this;
             s.Show();
         }
-        private void Exit(object sender, EventArgs e)
-        {   this.Close();
+        private void Exit(object sender, EventArgs e) {
+            this.Close();
         }
     }
 }

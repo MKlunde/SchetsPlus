@@ -116,11 +116,11 @@ namespace SketchEditor
         private void CreateActionMenu(String[] kleuren)
         {   
             ToolStripMenuItem menu = new ToolStripMenuItem("Actie");
-            menu.DropDownItems.Add("Clear", null, sketchControl.Schoon );
-            menu.DropDownItems.Add("Roteer", null, sketchControl.Roteer );
+            menu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch );
+            menu.DropDownItems.Add("Roteer", null, sketchControl.RotateSketch );
             ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
             foreach (string k in kleuren)
-                submenu.DropDownItems.Add(k, null, sketchControl.VeranderKleurViaMenu);
+                submenu.DropDownItems.Add(k, null, sketchControl.ChangeColorViaMenu);
             menu.DropDownItems.Add(submenu);
             menuStrip.Items.Add(menu);
         }
@@ -156,13 +156,13 @@ namespace SketchEditor
             b = new Button(); 
             b.Text = "Clear";  
             b.Location = new Point(  0, 0); 
-            b.Click += sketchControl.Schoon; 
+            b.Click += sketchControl.ClearSketch; 
             panel.Controls.Add(b);
             
             b = new Button(); 
             b.Text = "Rotate"; 
             b.Location = new Point( 80, 0); 
-            b.Click += sketchControl.Roteer; 
+            b.Click += sketchControl.RotateSketch; 
             panel.Controls.Add(b);
             
             l = new Label();  
@@ -173,7 +173,7 @@ namespace SketchEditor
             
             cbb = new ComboBox(); cbb.Location = new Point(240, 0); 
             cbb.DropDownStyle = ComboBoxStyle.DropDownList; 
-            cbb.SelectedValueChanged += sketchControl.VeranderKleur;
+            cbb.SelectedValueChanged += sketchControl.ChangeColor;
             foreach (string k in kleuren)
                 cbb.Items.Add(k);
             cbb.SelectedIndex = 0;

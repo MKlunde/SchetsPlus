@@ -17,41 +17,41 @@ namespace SketchEditor
         public SketchControl()
         {   this.BorderStyle = BorderStyle.Fixed3D;
             this.sketch = new Sketch();
-            this.Paint += this.teken;
+            this.Paint += this.DrawSketch;
             this.Resize += this.ResizeControl;
             this.ResizeControl(null, null);
         }
         protected override void OnPaintBackground(PaintEventArgs e)
         {
         }
-        private void teken(object o, PaintEventArgs pea)
+        private void DrawSketch(object o, PaintEventArgs pea)
         {   sketch.Draw(pea.Graphics);
         }
         private void ResizeControl(object o, EventArgs ea)
         {   sketch.Resize(this.ClientSize);
             this.Invalidate();
         }
-        public Graphics MaakBitmapGraphics()
+        public Graphics CreateBitmapGraphics()
         {   Graphics g = sketch.BitmapGraphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             return g;
         }
-        public void Schoon(object o, EventArgs ea)
+        public void ClearSketch(object o, EventArgs ea)
         {   sketch.Clear();
             this.Invalidate();
         }
-        public void Roteer(object o, EventArgs ea)
+        public void RotateSketch(object o, EventArgs ea)
         {   sketch.Resize(new Size(this.ClientSize.Height, this.ClientSize.Width));
             sketch.Rotate();
             this.Invalidate();
         }
-        public void VeranderKleur(object obj, EventArgs ea)
-        {   string kleurNaam = ((ComboBox)obj).Text;
-            penColor = Color.FromName(kleurNaam);
+        public void ChangeColor(object obj, EventArgs ea)
+        {   string colorName = ((ComboBox)obj).Text;
+            penColor = Color.FromName(colorName);
         }
-        public void VeranderKleurViaMenu(object obj, EventArgs ea)
-        {   string kleurNaam = ((ToolStripMenuItem)obj).Text;
-            penColor = Color.FromName(kleurNaam);
+        public void ChangeColorViaMenu(object obj, EventArgs ea)
+        {   string colorName = ((ToolStripMenuItem)obj).Text;
+            penColor = Color.FromName(colorName);
         }
     }
 }

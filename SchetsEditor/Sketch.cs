@@ -46,14 +46,18 @@ namespace SketchEditor
 
     /*public class Schets // New
     {
-        private List<ISchetsTool> objects;
+        private List<ISketchTool> objects;
 
         public Schets() {
-            objects = new List<ISchetsTool>();
+            objects = new List<ISketchTool>();
         }
-
-        public void AddObject(ISchetsTool obj) {
+        public void AddObject(ISketchTool obj) {
             objects.Add(obj);
+        }
+        public void Draw(Graphics g) {
+            for(int i = 0; i < objects.Count) {
+                // ...
+            }
         }
     }*/
 }
