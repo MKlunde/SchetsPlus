@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace SketchEditor
 {
-    public class Sketch // Old
+    /*public class Sketch // Old
     {
         private Bitmap bitmap;
         
@@ -42,22 +42,55 @@ namespace SketchEditor
         {
             bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
         }
-    }
+    }*/
 
-    /*public class Schets // New
+    public class Sketch
     {
-        private List<ISketchTool> objects;
+        private List<ISketchObject> objects;
+        private Bitmap bitmap;
+        private SketchControl sketchControl;
 
-        public Schets() {
-            objects = new List<ISketchTool>();
+        public List<ISketchObject> Objects {
+            get { return objects; }
         }
-        public void AddObject(ISketchTool obj) {
+        public Sketch(SketchControl sketchControl) {
+            this.sketchControl = sketchControl;
+            objects = new List<ISketchObject>();
+            bitmap = new Bitmap(1, 1);
+        }
+        public void AddObject(ISketchObject obj) {
             objects.Add(obj);
         }
         public void Draw(Graphics g) {
-            for(int i = 0; i < objects.Count) {
-                // ...
+            Graphics bitmapGraphics = Graphics.FromImage(bitmap);
+            bitmapGraphics.FillRectangle(Brushes.White, 0, 0, bitmap.Width, bitmap.Height);
+            Console.Write(objects.Count + ": ");
+            for (int i = 0; i < objects.Count; i++) {
+                //objects[i].Draw(bitmapGraphics);
+                bitmapGraphics.DrawEllipse(new Pen(Color.Black, 3), i%10*50, (int)Math.Floor((double)i/10)*50, 40, 40);
+            }
+            g.DrawImage(bitmap, 0, 0);
+        }
+        public void Resize(Size sz) {
+            if (sz.Width > bitmap.Size.Width || sz.Height > bitmap.Size.Height) {
+                Bitmap newBitmap = new Bitmap(
+                    Math.Max(sz.Width, bitmap.Size.Width),
+                    Math.Max(sz.Height, bitmap.Size.Height)
+                );
+                bitmap = newBitmap;
+                sketchControl.Invalidate();
             }
         }
-    }*/
+        public void Clear() {
+            objects = new List<ISketchObject>();
+        }
+        public void Rotate() {
+            // ...
+        }
+
+
+        public Graphics BitmapGraphics {
+            get { return Graphics.FromImage(new Bitmap(bitmap.Size.Width, bitmap.Size.Height)); }
+        }
+    }
 }

@@ -17,11 +17,12 @@ namespace SketchEditor
             this.Text = "Schetseditor";
             this.IsMdiContainer = true;
             this.MainMenuStrip = menuStrip;
+            this.NewSketchWin(); // Open lege SketchWin bij opstarten
         }
         private void CreateFileMenu() {
             ToolStripDropDownItem menu;
             menu = new ToolStripMenuItem("File");
-            menu.DropDownItems.Add("Nieuw", null, this.NewSketchWin);
+            menu.DropDownItems.Add("Nieuw", null, this.ManualNewSketchWin);
             menu.DropDownItems.Add("Exit", null, this.Exit);
             menuStrip.Items.Add(menu);
         }
@@ -32,17 +33,20 @@ namespace SketchEditor
             menuStrip.Items.Add(menu);
         }
         private void About(object o, EventArgs ea) {
-            MessageBox.Show("SchetsPlus versie 0.1\nDoor Menno Klunder en Mats Gottenbos\nGebaseerd op Schets versie 1.0 - (c) UU Informatica 2010"
-                           , "Over \"Schets\""
-                           , MessageBoxButtons.OK
-                           , MessageBoxIcon.Information
-                           );
+            MessageBox.Show("SchetsPlus versie 0.1\nDoor Menno Klunder en Mats Gottenbos\nGebaseerd op Schets versie 1.0 - (c) UU Informatica 2010",
+                "Over \"Schets\"",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
         }
 
-        private void NewSketchWin(object sender, EventArgs e) {
+        private void NewSketchWin() {
             SketchWin s = new SketchWin();
             s.MdiParent = this;
             s.Show();
+        }
+        private void ManualNewSketchWin(object sender, EventArgs e) {
+            this.NewSketchWin();
         }
         private void Exit(object sender, EventArgs e) {
             this.Close();

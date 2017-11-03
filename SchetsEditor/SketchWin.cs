@@ -11,18 +11,19 @@ namespace SketchEditor
     {   
         MenuStrip menuStrip;
         SketchControl sketchControl;
-        ISketchTool currentTool;
+        ISketchTool currentTool, currentObject;
         Panel panel;
         bool mouseDown;
-        ResourceManager resourceManager
-            = new ResourceManager("SchetsEditor.Properties.Resources"
-                                 , Assembly.GetExecutingAssembly()
-                                 );
+        ResourceManager resourceManager = new ResourceManager(
+                "SchetsEditor.Properties.Resources",
+                Assembly.GetExecutingAssembly()
+        );
 
         private void ResizeWin(object o, EventArgs ea)
         {
-            sketchControl.Size = new Size ( this.ClientSize.Width  - 70
-                                          , this.ClientSize.Height - 50);
+            sketchControl.Size = new Size (
+                this.ClientSize.Width  - 70,
+                this.ClientSize.Height - 50);
             panel.Location = new Point(64, this.ClientSize.Height - 30);
         }
 
@@ -43,40 +44,42 @@ namespace SketchEditor
 
         public SketchWin()
         {
-            ISketchTool[] theTools = { new PenTool()         
-                                    , new LineTool()
-                                    , new RectangleTool()
-                                    , new FilledRectangleTool()
-                                    , new EllipseTool()
-                                    , new FilledEllipseTool()
-                                    , new TextTool()
-                                    , new EraserTool()
-                                    };
-            String[] theColors = { "Black", "Red", "Green", "Blue"
-                                 , "Yellow", "Magenta", "Cyan" 
-                                 };
+            ISketchTool[] theTools = {
+                new PenTool(),
+                new LineTool(),
+                new RectangleTool(),
+                new FilledRectangleTool(),
+                new EllipseTool(),
+                new FilledEllipseTool(),
+                new TextTool(),
+                new EraserTool()
+            };
+            String[] theColors = {
+                "Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan"
+            };
 
             this.ClientSize = new Size(700, 500);
             currentTool = theTools[0];
 
             sketchControl = new SketchControl();
             sketchControl.Location = new Point(64, 10);
-            sketchControl.MouseDown += (object o, MouseEventArgs mea) =>
-                                       {   mouseDown=true;  
-                                           currentTool.MouseDown(sketchControl, mea.Location); 
-                                       };
-            sketchControl.MouseMove += (object o, MouseEventArgs mea) =>
-                                       {   if (mouseDown)
-                                           currentTool.MouseDrag(sketchControl, mea.Location); 
-                                       };
-            sketchControl.MouseUp   += (object o, MouseEventArgs mea) =>
-                                       {   if (mouseDown)
-                                           currentTool.MouseUp (sketchControl, mea.Location);
-                                           mouseDown = false; 
-                                       };
-            sketchControl.KeyPress +=  (object o, KeyPressEventArgs kpea) => 
-                                       {   currentTool.Letter  (sketchControl, kpea.KeyChar); 
-                                       };
+            sketchControl.MouseDown += (object o, MouseEventArgs mea) => {
+                mouseDown = true;
+
+                //currentTool.MouseDown(sketchControl, mea.Location); 
+            };
+            sketchControl.MouseMove += (object o, MouseEventArgs mea) => {
+                if (mouseDown)
+                    currentTool.MouseDrag(sketchControl, mea.Location); 
+            };
+            sketchControl.MouseUp += (object o, MouseEventArgs mea) => {
+                if (mouseDown)
+                    currentTool.MouseUp(sketchControl, mea.Location);
+                mouseDown = false;
+            };
+            sketchControl.KeyPress += (object o, KeyPressEventArgs kpea) => {
+                currentTool.Letter(sketchControl, kpea.KeyChar); 
+            };
             this.Controls.Add(sketchControl);
 
             menuStrip = new MenuStrip();
@@ -85,8 +88,8 @@ namespace SketchEditor
             this.CreateFileMenu();
             this.CreateToolMenu(theTools);
             this.CreateActionMenu(theColors);
-            this.maakToolButtons(theTools);
-            this.maakAktieButtons(theColors);
+            this.CreateToolButtons(theTools);
+            this.CreateActionButtons(theColors);
             this.Resize += this.ResizeWin;
             this.ResizeWin(null, null);
         }
@@ -125,7 +128,7 @@ namespace SketchEditor
             menuStrip.Items.Add(menu);
         }
 
-        private void maakToolButtons(ICollection<ISketchTool> tools)
+        private void CreateToolButtons(ICollection<ISketchTool> tools)
         {
             int t = 0;
             foreach (ISketchTool tool in tools)
@@ -146,7 +149,7 @@ namespace SketchEditor
             }
         }
 
-        private void maakAktieButtons(String[] kleuren)
+        private void CreateActionButtons(String[] kleuren)
         {   
             panel = new Panel();
             panel.Size = new Size(600, 24);
