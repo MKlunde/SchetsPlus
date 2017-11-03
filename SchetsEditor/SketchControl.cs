@@ -3,55 +3,55 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace SchetsEditor
-{   public class SchetsControl : UserControl
-    {   private Schets schets;
-        private Color penkleur;
+namespace SketchEditor
+{   public class SketchControl : UserControl
+    {   private Sketch sketch;
+        private Color penColor;
 
-        public Color PenKleur
-        { get { return penkleur; }
+        public Color PenColor
+        { get { return penColor; }
         }
-        public Schets Schets
-        { get { return schets;   }
+        public Sketch Sketch
+        { get { return sketch;   }
         }
-        public SchetsControl()
+        public SketchControl()
         {   this.BorderStyle = BorderStyle.Fixed3D;
-            this.schets = new Schets();
+            this.sketch = new Sketch();
             this.Paint += this.teken;
-            this.Resize += this.veranderAfmeting;
-            this.veranderAfmeting(null, null);
+            this.Resize += this.ResizeControl;
+            this.ResizeControl(null, null);
         }
         protected override void OnPaintBackground(PaintEventArgs e)
         {
         }
         private void teken(object o, PaintEventArgs pea)
-        {   schets.Teken(pea.Graphics);
+        {   sketch.Draw(pea.Graphics);
         }
-        private void veranderAfmeting(object o, EventArgs ea)
-        {   schets.VeranderAfmeting(this.ClientSize);
+        private void ResizeControl(object o, EventArgs ea)
+        {   sketch.Resize(this.ClientSize);
             this.Invalidate();
         }
         public Graphics MaakBitmapGraphics()
-        {   Graphics g = schets.BitmapGraphics;
+        {   Graphics g = sketch.BitmapGraphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             return g;
         }
         public void Schoon(object o, EventArgs ea)
-        {   schets.Schoon();
+        {   sketch.Clear();
             this.Invalidate();
         }
         public void Roteer(object o, EventArgs ea)
-        {   schets.VeranderAfmeting(new Size(this.ClientSize.Height, this.ClientSize.Width));
-            schets.Roteer();
+        {   sketch.Resize(new Size(this.ClientSize.Height, this.ClientSize.Width));
+            sketch.Rotate();
             this.Invalidate();
         }
         public void VeranderKleur(object obj, EventArgs ea)
         {   string kleurNaam = ((ComboBox)obj).Text;
-            penkleur = Color.FromName(kleurNaam);
+            penColor = Color.FromName(kleurNaam);
         }
         public void VeranderKleurViaMenu(object obj, EventArgs ea)
         {   string kleurNaam = ((ToolStripMenuItem)obj).Text;
-            penkleur = Color.FromName(kleurNaam);
+            penColor = Color.FromName(kleurNaam);
         }
     }
 }

@@ -2,36 +2,36 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SchetsEditor
+namespace SketchEditor
 {
-    public class Hoofdscherm : Form
+    public class MainWindow : Form
     {
         MenuStrip menuStrip;
 
-        public Hoofdscherm()
+        public MainWindow()
         {   this.ClientSize = new Size(800, 600);
             menuStrip = new MenuStrip();
             this.Controls.Add(menuStrip);
-            this.maakFileMenu();
-            this.maakHelpMenu();
-            this.Text = "Schets editor";
+            this.CreateFileMenu();
+            this.CreateHelpMenu();
+            this.Text = "Schetseditor";
             this.IsMdiContainer = true;
             this.MainMenuStrip = menuStrip;
         }
-        private void maakFileMenu()
+        private void CreateFileMenu()
         {   ToolStripDropDownItem menu;
             menu = new ToolStripMenuItem("File");
-            menu.DropDownItems.Add("Nieuw", null, this.nieuw);
-            menu.DropDownItems.Add("Exit", null, this.afsluiten);
+            menu.DropDownItems.Add("Nieuw", null, this.NewSketchWin);
+            menu.DropDownItems.Add("Exit", null, this.Exit);
             menuStrip.Items.Add(menu);
         }
-        private void maakHelpMenu()
+        private void CreateHelpMenu()
         {   ToolStripDropDownItem menu;
             menu = new ToolStripMenuItem("Help");
-            menu.DropDownItems.Add("Over \"Schets\"", null, this.about);
+            menu.DropDownItems.Add("Over \"Schets\"", null, this.About);
             menuStrip.Items.Add(menu);
         }
-        private void about(object o, EventArgs ea)
+        private void About(object o, EventArgs ea)
         {   MessageBox.Show("Schets versie 1.0\n(c) UU Informatica 2010"
                            , "Over \"Schets\""
                            , MessageBoxButtons.OK
@@ -39,12 +39,12 @@ namespace SchetsEditor
                            );
         }
 
-        private void nieuw(object sender, EventArgs e)
-        {   SchetsWin s = new SchetsWin();
+        private void NewSketchWin(object sender, EventArgs e)
+        {   SketchWin s = new SketchWin();
             s.MdiParent = this;
             s.Show();
         }
-        private void afsluiten(object sender, EventArgs e)
+        private void Exit(object sender, EventArgs e)
         {   this.Close();
         }
     }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SchetsEditor.Properties {
+namespace SketchEditor.Properties {
     using System;
     
     

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SchetsEditor
+namespace SketchEditor
 {
     static class Program
     {
         [STAThread]
         static void Main()
         {
-            Application.Run(new Hoofdscherm());
+            Application.Run(new MainWindow());
         }
     }
 }

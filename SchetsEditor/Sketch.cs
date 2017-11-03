@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace SchetsEditor
+namespace SketchEditor
 {
-    public class Schets
+    public class Sketch // Old
     {
         private Bitmap bitmap;
         
-        public Schets()
+        public Sketch()
         {
             bitmap = new Bitmap(1, 1);
         }
@@ -16,31 +16,44 @@ namespace SchetsEditor
         {
             get { return Graphics.FromImage(bitmap); }
         }
-        public void VeranderAfmeting(Size sz)
+        public void Resize(Size sz)
         {
             if (sz.Width > bitmap.Size.Width || sz.Height > bitmap.Size.Height)
             {
-                Bitmap nieuw = new Bitmap( Math.Max(sz.Width,  bitmap.Size.Width)
+                Bitmap newBitmap = new Bitmap( Math.Max(sz.Width,  bitmap.Size.Width)
                                          , Math.Max(sz.Height, bitmap.Size.Height)
                                          );
-                Graphics gr = Graphics.FromImage(nieuw);
+                Graphics gr = Graphics.FromImage(newBitmap);
                 gr.FillRectangle(Brushes.White, 0, 0, sz.Width, sz.Height);
                 gr.DrawImage(bitmap, 0, 0);
-                bitmap = nieuw;
+                bitmap = newBitmap;
             }
         }
-        public void Teken(Graphics gr)
+        public void Draw(Graphics gr)
         {
             gr.DrawImage(bitmap, 0, 0);
         }
-        public void Schoon()
+        public void Clear()
         {
             Graphics gr = Graphics.FromImage(bitmap);
             gr.FillRectangle(Brushes.White, 0, 0, bitmap.Width, bitmap.Height);
         }
-        public void Roteer()
+        public void Rotate()
         {
             bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
         }
     }
+
+    /*public class Schets // New
+    {
+        private List<ISchetsTool> objects;
+
+        public Schets() {
+            objects = new List<ISchetsTool>();
+        }
+
+        public void AddObject(ISchetsTool obj) {
+            objects.Add(obj);
+        }
+    }*/
 }
