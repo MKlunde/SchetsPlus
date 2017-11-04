@@ -70,25 +70,28 @@ namespace SketchEditor
         public override void MouseDown(SketchControl s, Point p) {
             base.MouseDown(s, p);
             brush = Brushes.Gray;
+            ISketchObject obj = CreateObject(s, p, p);
+            s.SketchAddObject(obj);
         }
         public override void MouseDrag(SketchControl s, Point p) {
-            //s.Refresh();
-            //this.BeingDrawn(s.CreateGraphics(), this.startingPoint, p);
+            ChangeCurrentObjectEndingPoint(s, p);
         }
         public override void MouseUp(SketchControl s, Point p) {
             base.MouseUp(s, p);
-            this.Finished(s, this.startingPoint, p);
-            s.Invalidate();
+            ChangeCurrentObjectEndingPoint(s, p);
+            FinishCurrentObject(s);
         }
         public override void Letter(SketchControl s, char c) { }
 
-        public abstract void BeingDrawn(Graphics g, Point p1, Point p2);
-
-        public virtual void Finished(SketchControl s, Point p1, Point p2) {
-            //this.BeingDrawn(g, p1, p2);
-            endingPoint = p2;
-            //s.SketchAddObject(this);
+        public virtual void ChangeCurrentObjectEndingPoint(SketchControl s, Point p) {
+            s.CurrentObject.ChangeEndingPoint(p);
+            s.Invalidate();
         }
+
+        public virtual void FinishCurrentObject(SketchControl s) {
+            s.CurrentObject.Finish();
+        }
+        public abstract ISketchObject CreateObject(SketchControl s, Point p1, Point p2);
 
         public override void Draw(Graphics g) { }
     }
@@ -97,9 +100,13 @@ namespace SketchEditor
     {
         public override string ToString() { return "cirkel"; }
 
-        public override void BeingDrawn(Graphics g, Point p1, Point p2)
-        {
+        //public override void BeingDrawn(Graphics g, Point p1, Point p2)
+        //{
             //g.DrawEllipse(CreatePen(brush, 3), p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new EllipseObject(p1, p2);
         }
     }
 
@@ -107,9 +114,13 @@ namespace SketchEditor
     {
         public override string ToString() { return "cirkelV"; }
 
-        public override void Finished(SketchControl s, Point p1, Point p2)
-        {
+        //public override void Finish(SketchControl s, Point p1, Point p2)
+        //{
             //g.FillEllipse(brush, p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new FilledEllipseObject(p1, p2);
         }
     }
 
@@ -117,9 +128,13 @@ namespace SketchEditor
     {
         public override string ToString() { return "kader"; }
 
-        public override void BeingDrawn(Graphics g, Point p1, Point p2)
-        {
+        //public override void BeingDrawn(Graphics g, Point p1, Point p2)
+        //{
             //g.DrawRectangle(CreatePen(brush,3), DualPointTool.PointsToRectangle(p1, p2));
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new RectangleObject(p1, p2);
         }
     }
     
@@ -127,9 +142,13 @@ namespace SketchEditor
     {
         public override string ToString() { return "vlak"; }
 
-        public override void Finished(SketchControl s, Point p1, Point p2)
-        {
+        //public override void Finished(SketchControl s, Point p1, Point p2)
+        //{
             //g.FillRectangle(brush, DualPointTool.PointsToRectangle(p1, p2));
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new FilledRectangleObject(p1, p2);
         }
     }
 
@@ -137,9 +156,13 @@ namespace SketchEditor
     {
         public override string ToString() { return "lijn"; }
 
-        public override void BeingDrawn(Graphics g, Point p1, Point p2)
-        {
+        //public override void BeingDrawn(Graphics g, Point p1, Point p2)
+        //{
             //g.DrawLine(CreatePen(this.brush,3), p1, p2);
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new LineObject(p1, p2);
         }
     }
 
@@ -152,15 +175,23 @@ namespace SketchEditor
             this.MouseUp(s, p);
             this.MouseDown(s, p);
         }
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new PenObject(p1, p2);
+        }
     }
     
     public class EraserTool : PenTool
     {
         public override string ToString() { return "gum"; }
 
-        public override void BeingDrawn(Graphics g, Point p1, Point p2)
-        {
+        //public override void BeingDrawn(Graphics g, Point p1, Point p2)
+        //{
            // g.DrawLine(CreatePen(Brushes.White, 7), p1, p2);
+        //}
+
+        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
+            return new EraserObject(p1, p2);
         }
     }
 }

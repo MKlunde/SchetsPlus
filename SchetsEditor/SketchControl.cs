@@ -10,12 +10,16 @@ namespace SketchEditor
     {
         private Sketch sketch;
         private Color penColor;
+        private ISketchObject currentObject;
 
         public Color PenColor {
             get { return penColor; }
         }
         public Sketch Sketch {
             get { return sketch; }
+        }
+        public ISketchObject CurrentObject {
+            get { return currentObject; }
         }
         public SketchControl() {
             this.BorderStyle = BorderStyle.Fixed3D;
@@ -59,6 +63,7 @@ namespace SketchEditor
         /* Toegevoegd */
         public void SketchAddObject(ISketchObject obj) {
             sketch.AddObject(obj);
+            currentObject = obj;
         }
     }
 }

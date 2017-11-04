@@ -48,13 +48,13 @@ namespace SketchEditor
     {
         private List<ISketchObject> objects;
         private Bitmap bitmap;
-        private SketchControl sketchControl;
+        private SketchControl s;
 
         public List<ISketchObject> Objects {
             get { return objects; }
         }
-        public Sketch(SketchControl sketchControl) {
-            this.sketchControl = sketchControl;
+        public Sketch(SketchControl s) {
+            this.s = s;
             objects = new List<ISketchObject>();
             bitmap = new Bitmap(1, 1);
         }
@@ -64,11 +64,10 @@ namespace SketchEditor
         public void Draw(Graphics g) {
             Graphics bitmapGraphics = Graphics.FromImage(bitmap);
             bitmapGraphics.FillRectangle(Brushes.White, 0, 0, bitmap.Width, bitmap.Height);
-            Console.Write(objects.Count + ": ");
             for (int i = 0; i < objects.Count; i++) {
-                //objects[i].Draw(bitmapGraphics);
-                bitmapGraphics.DrawEllipse(new Pen(Color.Black, 3), i%10*50, (int)Math.Floor((double)i/10)*50, 40, 40);
+                objects[i].Draw(bitmapGraphics);
             }
+            
             g.DrawImage(bitmap, 0, 0);
         }
         public void Resize(Size sz) {
@@ -78,7 +77,7 @@ namespace SketchEditor
                     Math.Max(sz.Height, bitmap.Size.Height)
                 );
                 bitmap = newBitmap;
-                sketchControl.Invalidate();
+                s.Invalidate();
             }
         }
         public void Clear() {

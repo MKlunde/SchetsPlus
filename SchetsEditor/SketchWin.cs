@@ -11,7 +11,7 @@ namespace SketchEditor
     {   
         MenuStrip menuStrip;
         SketchControl sketchControl;
-        ISketchTool currentTool, currentObject;
+        ISketchTool currentTool;
         Panel panel;
         bool mouseDown;
         ResourceManager resourceManager = new ResourceManager(
@@ -65,8 +65,7 @@ namespace SketchEditor
             sketchControl.Location = new Point(64, 10);
             sketchControl.MouseDown += (object o, MouseEventArgs mea) => {
                 mouseDown = true;
-
-                //currentTool.MouseDown(sketchControl, mea.Location); 
+                currentTool.MouseDown(sketchControl, mea.Location); 
             };
             sketchControl.MouseMove += (object o, MouseEventArgs mea) => {
                 if (mouseDown)
