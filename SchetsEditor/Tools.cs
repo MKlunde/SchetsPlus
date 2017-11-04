@@ -10,6 +10,8 @@ namespace SketchEditor
         void MouseDrag(SketchControl s, Point p);
         void MouseUp(SketchControl s, Point p);
         void Letter(SketchControl s, char c);
+        void Draw(Graphics g);
+        ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush);
     }
 
     public abstract class StartingPointTool : ISketchTool
@@ -21,13 +23,14 @@ namespace SketchEditor
         {
             startingPoint = p;
         }
+        public abstract void MouseDrag(SketchControl s, Point p);
         public virtual void MouseUp(SketchControl s, Point p)
         {
             brush = new SolidBrush(s.PenColor);
         }
-        public abstract void MouseDrag(SketchControl s, Point p);
         public abstract void Letter(SketchControl s, char c);
         public abstract void Draw(Graphics g);
+        public abstract ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush);
     }
 
     public class TextTool : StartingPointTool
@@ -36,21 +39,28 @@ namespace SketchEditor
 
         public override void MouseDrag(SketchControl s, Point p) { }
 
+        public override void MouseUp(SketchControl s, Point p) {
+            base.MouseUp(s, p);
+            ISketchObject obj = CreateObject(s, p, new SolidBrush(s.PenColor));
+            s.SketchAddObject(obj);
+           // FinishCurrentObject(s);
+        }
+
         public override void Letter(SketchControl s, char c)
         {
-            if (c >= 32) {
-                Graphics gr = s.CreateBitmapGraphics();
-                Font font = new Font("Tahoma", 40);
-                string tekst = c.ToString();
-                SizeF sz = gr.MeasureString(tekst, font, this.startingPoint, StringFormat.GenericTypographic);
-                gr.DrawString (tekst, font, brush, this.startingPoint, StringFormat.GenericTypographic);
-                // gr.DrawRectangle(Pens.Black, startpunt.X, startpunt.Y, sz.Width, sz.Height);
-                startingPoint.X += (int)sz.Width;
-                s.Invalidate();
-            }
+            CurrentObjectAddText(s, c.ToString());
+        }
+
+        public virtual void CurrentObjectAddText(SketchControl s, string text) {
+            s.CurrentObject.AddText(text);
+            s.Invalidate();
         }
 
         public override void Draw(Graphics g) { }
+
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new TextObject(s, startingPoint, brush);
+        }
     }
 
     public abstract class DualPointTool : StartingPointTool
@@ -69,29 +79,30 @@ namespace SketchEditor
         }
         public override void MouseDown(SketchControl s, Point p) {
             base.MouseDown(s, p);
-            brush = Brushes.Gray;
-            ISketchObject obj = CreateObject(s, p, p);
+            ISketchObject obj = CreateObject(s, p, new SolidBrush(s.PenColor));
             s.SketchAddObject(obj);
+            CurrentObjectChangeEndingPoint(s, p);
         }
         public override void MouseDrag(SketchControl s, Point p) {
-            ChangeCurrentObjectEndingPoint(s, p);
+            CurrentObjectChangeEndingPoint(s, p);
+            s.Invalidate();
         }
         public override void MouseUp(SketchControl s, Point p) {
             base.MouseUp(s, p);
-            ChangeCurrentObjectEndingPoint(s, p);
+            CurrentObjectChangeEndingPoint(s, p);
             FinishCurrentObject(s);
         }
         public override void Letter(SketchControl s, char c) { }
 
-        public virtual void ChangeCurrentObjectEndingPoint(SketchControl s, Point p) {
+        public virtual void CurrentObjectChangeEndingPoint(SketchControl s, Point p) {
             s.CurrentObject.ChangeEndingPoint(p);
-            s.Invalidate();
         }
 
         public virtual void FinishCurrentObject(SketchControl s) {
             s.CurrentObject.Finish();
+            s.Invalidate();
         }
-        public abstract ISketchObject CreateObject(SketchControl s, Point p1, Point p2);
+        
 
         public override void Draw(Graphics g) { }
     }
@@ -105,8 +116,8 @@ namespace SketchEditor
             //g.DrawEllipse(CreatePen(brush, 3), p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new EllipseObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new EllipseObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
 
@@ -119,8 +130,8 @@ namespace SketchEditor
             //g.FillEllipse(brush, p1.X, p1.Y, p2.X - p1.X, p2.Y - p1.Y);
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new FilledEllipseObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new FilledEllipseObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
 
@@ -133,8 +144,8 @@ namespace SketchEditor
             //g.DrawRectangle(CreatePen(brush,3), DualPointTool.PointsToRectangle(p1, p2));
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new RectangleObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new RectangleObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
     
@@ -147,8 +158,8 @@ namespace SketchEditor
             //g.FillRectangle(brush, DualPointTool.PointsToRectangle(p1, p2));
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new FilledRectangleObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new FilledRectangleObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
 
@@ -161,8 +172,8 @@ namespace SketchEditor
             //g.DrawLine(CreatePen(this.brush,3), p1, p2);
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new LineObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new LineObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
 
@@ -172,12 +183,12 @@ namespace SketchEditor
 
         public override void MouseDrag(SketchControl s, Point p)
         {
-            this.MouseUp(s, p);
-            this.MouseDown(s, p);
+            MouseUp(s, p);
+            MouseDown(s, p);
         }
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new PenObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new PenObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
     
@@ -190,8 +201,8 @@ namespace SketchEditor
            // g.DrawLine(CreatePen(Brushes.White, 7), p1, p2);
         //}
 
-        public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new EraserObject(s, p1, p2, new SolidBrush(s.PenColor));
+        public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+            return new EraserObject(s, startingPoint, new SolidBrush(s.PenColor));
         }
     }
 }

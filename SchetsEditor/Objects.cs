@@ -9,27 +9,32 @@ namespace SketchEditor
     public interface ISketchObject
     {
         void ChangeEndingPoint(Point p);
+        void AddText(String text);
         void Finish();
         void Draw(Graphics g);
     }
 
-    public abstract class SketchObject : ISketchObject
+    public abstract class StartingPointObject : ISketchObject
     {
         protected SketchControl s;
         protected Point startingPoint, endingPoint;
         protected Brush brush, finishedBrush, unfinishedBrush;
+        protected String text;
         protected bool finished = false;
 
-        public SketchObject(SketchControl s, Point p1, Point p2, SolidBrush brush) {
+        public StartingPointObject(SketchControl s, Point startingPoint, SolidBrush brush) {
             this.s = s;
-            startingPoint = p1;
-            endingPoint = p2;
+            this.startingPoint = startingPoint;
             finishedBrush = brush;
-            unfinishedBrush = new SolidBrush(Color.FromArgb(100, brush.Color.R, brush.Color.G, brush.Color.B));
+            unfinishedBrush = new SolidBrush(Color.FromArgb(150, brush.Color.R, brush.Color.G, brush.Color.B));
         }
 
         public void ChangeEndingPoint(Point p) {
             endingPoint = p;
+        }
+
+        public void AddText(String text) {
+            this.text += text;
         }
 
         public void Finish() {
@@ -45,14 +50,24 @@ namespace SketchEditor
         }
     }
 
-    public class TextObject : SketchObject
+    public class TextObject : StartingPointObject
     {
-        public TextObject(SketchControl s, Point p, SolidBrush brush) :base(s, p, new Point(0, 0), brush) { }
+        public TextObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+
+        public override void Draw(Graphics g) {
+            Font font = new Font("Tahoma", 40);
+            g.DrawString(text, font, brush, startingPoint, StringFormat.GenericTypographic);
+        }
     }
 
-    public class EllipseObject : SketchObject
+    public abstract class DualPointObject : StartingPointObject
     {
-        public EllipseObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public DualPointObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+    }
+
+    public class EllipseObject : DualPointObject
+    {
+        public EllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
@@ -61,7 +76,7 @@ namespace SketchEditor
     }
     public class FilledEllipseObject : EllipseObject
     {
-        public FilledEllipseObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public FilledEllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
@@ -70,27 +85,48 @@ namespace SketchEditor
 
     }
 
-    public class RectangleObject : SketchObject
+    public class RectangleObject : DualPointObject
     {
-        public RectangleObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public RectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+
+        public override void Draw(Graphics g) {
+            base.Draw(g);
+            g.DrawRectangle(new Pen(brush, 3), startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+        }
     }
     public class FilledRectangleObject : RectangleObject
     {
-        public FilledRectangleObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public FilledRectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+
+        public override void Draw(Graphics g) {
+            base.Draw(g);
+            g.FillRectangle(brush, startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+        }
     }
 
-    public class LineObject : SketchObject
+    public class LineObject : DualPointObject
     {
-        public LineObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public LineObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+
+        public override void Draw(Graphics g) {
+            base.Draw(g);
+            g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+        }
     }
 
-    public class PenObject : SketchObject
+    public class PenObject : LineObject
     {
-        public PenObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public PenObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
     }
 
-    public class EraserObject : SketchObject
+    public class EraserObject : PenObject
     {
-        public EraserObject(SketchControl s, Point p1, Point p2, SolidBrush brush) :base(s, p1, p2, brush) { }
+        public EraserObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+
+        public override void Draw(Graphics g) {
+            base.Draw(g);
+            brush = Brushes.White;
+            g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+        }
     }
 }
