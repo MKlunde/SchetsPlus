@@ -98,7 +98,7 @@ namespace SketchEditor
 
     public class EllipseTool : DualPointTool
     {
-        public override string ToString() { return "cirkel"; }
+        public override string ToString() { return "ellips"; }
 
         //public override void BeingDrawn(Graphics g, Point p1, Point p2)
         //{
@@ -106,13 +106,13 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new EllipseObject(p1, p2);
+            return new EllipseObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
 
     public class FilledEllipseTool : EllipseTool
     {
-        public override string ToString() { return "cirkelV"; }
+        public override string ToString() { return "ellipsV"; }
 
         //public override void Finish(SketchControl s, Point p1, Point p2)
         //{
@@ -120,7 +120,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new FilledEllipseObject(p1, p2);
+            return new FilledEllipseObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
 
@@ -134,7 +134,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new RectangleObject(p1, p2);
+            return new RectangleObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
     
@@ -148,7 +148,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new FilledRectangleObject(p1, p2);
+            return new FilledRectangleObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
 
@@ -162,7 +162,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new LineObject(p1, p2);
+            return new LineObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
 
@@ -177,7 +177,7 @@ namespace SketchEditor
         }
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new PenObject(p1, p2);
+            return new PenObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
     
@@ -191,7 +191,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point p1, Point p2) {
-            return new EraserObject(p1, p2);
+            return new EraserObject(s, p1, p2, new SolidBrush(s.PenColor));
         }
     }
 }

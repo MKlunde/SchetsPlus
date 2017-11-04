@@ -63,9 +63,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cirkel {
+        internal static System.Drawing.Bitmap ellips {
             get {
-                object obj = ResourceManager.GetObject("cirkel", resourceCulture);
+                object obj = ResourceManager.GetObject("ellips", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cirkelV {
+        internal static System.Drawing.Bitmap ellipsV {
             get {
-                object obj = ResourceManager.GetObject("cirkelV", resourceCulture);
+                object obj = ResourceManager.GetObject("ellipsV", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
