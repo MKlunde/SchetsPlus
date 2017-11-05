@@ -8,7 +8,8 @@ using System.Resources;
 namespace SketchEditor
 {
     public class SketchWin : Form
-    {   
+    {
+        MainWindow parentWindow
         MenuStrip menuStrip;
         SketchControl sketchControl;
         ISketchTool currentTool;
@@ -42,8 +43,10 @@ namespace SketchEditor
             this.Close();
         }
 
-        public SketchWin()
+        public SketchWin(MainWindow parentWindow)
         {
+            this.parentWindow = parentWindow;
+
             ISketchTool[] theTools = {
                 new PenTool(),
                 new LineTool(),
@@ -95,7 +98,7 @@ namespace SketchEditor
 
         private void CreateFileMenu()
         {   
-            ToolStripMenuItem menu = new ToolStripMenuItem("File");
+            ToolStripMenuItem menu = new ToolStripMenuItem("Bestand");
             menu.MergeAction = MergeAction.MatchOnly;
             menu.DropDownItems.Add("Sluiten", null, this.Exit);
             menuStrip.Items.Add(menu);

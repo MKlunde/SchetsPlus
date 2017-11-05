@@ -6,7 +6,7 @@ namespace SketchEditor
 {
     public class MainWindow : Form
     {
-        MenuStrip menuStrip;
+        public MenuStrip menuStrip;
 
         public MainWindow(){
             this.ClientSize = new Size(800, 600);
@@ -21,9 +21,9 @@ namespace SketchEditor
         }
         private void CreateFileMenu() {
             ToolStripDropDownItem menu;
-            menu = new ToolStripMenuItem("File");
+            menu = new ToolStripMenuItem("Bestand");
             menu.DropDownItems.Add("Nieuw", null, this.ManualNewSketchWin);
-            menu.DropDownItems.Add("Exit", null, this.Exit);
+            menu.DropDownItems.Add("Afsluiten", null, this.Exit);
             menuStrip.Items.Add(menu);
         }
         private void CreateHelpMenu() {
@@ -41,7 +41,7 @@ namespace SketchEditor
         }
 
         private void NewSketchWin() {
-            SketchWin s = new SketchWin();
+            SketchWin s = new SketchWin(this);
             s.MdiParent = this;
             s.Show();
         }
