@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace SketchEditor
 {
@@ -12,6 +13,7 @@ namespace SketchEditor
         void AddText(String text);
         void Finish();
         void Draw(Graphics g);
+        bool IsOnLocation(Point p);
     }
 
     public abstract class StartingPointObject : ISketchObject
@@ -41,6 +43,11 @@ namespace SketchEditor
             finished = true;
         }
 
+        protected Rectangle GetRectangle() {
+            Rectangle rect = new Rectangle(Math.Min(startingPoint.X, endingPoint.X), Math.Min(startingPoint.Y, endingPoint.Y), Math.Abs(endingPoint.X - startingPoint.X), Math.Abs(endingPoint.Y - startingPoint.Y));
+            return rect;
+        }
+
         public virtual void Draw(Graphics g) {
             if (finished) {
                 brush = finishedBrush;
@@ -48,6 +55,8 @@ namespace SketchEditor
                 brush = unfinishedBrush;
             }
         }
+
+        public abstract bool IsOnLocation(Point p);
     }
 
     public class TextObject : StartingPointObject
@@ -57,6 +66,10 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             Font font = new Font("Tahoma", 40);
             g.DrawString(text, font, brush, startingPoint, StringFormat.GenericTypographic);
+        }
+
+        public override bool IsOnLocation(Point p) {
+            return false;
         }
     }
 
@@ -71,7 +84,11 @@ namespace SketchEditor
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.DrawEllipse(new Pen(brush, 3), startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+            g.DrawEllipse(new Pen(brush, 3), GetRectangle());
+        }
+
+        public override bool IsOnLocation(Point p) {
+            return false;
         }
     }
     public class FilledEllipseObject : EllipseObject
@@ -80,7 +97,7 @@ namespace SketchEditor
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.FillEllipse(brush, startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+            g.FillEllipse(brush, GetRectangle());
         }
 
     }
@@ -91,7 +108,11 @@ namespace SketchEditor
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.DrawRectangle(new Pen(brush, 3), startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+            g.DrawRectangle(new Pen(brush, 3), GetRectangle());
+        }
+
+        public override bool IsOnLocation(Point p) {
+            return false;
         }
     }
     public class FilledRectangleObject : RectangleObject
@@ -100,7 +121,7 @@ namespace SketchEditor
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.FillRectangle(brush, startingPoint.X, startingPoint.Y, endingPoint.X - startingPoint.X, endingPoint.Y - startingPoint.Y);
+            g.FillRectangle(brush, GetRectangle());
         }
     }
 
@@ -111,6 +132,16 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+        }
+
+        public override bool IsOnLocation(Point p) {
+            if (finished) {
+                GraphicsPath path = new GraphicsPath();
+                path.AddLine(startingPoint, endingPoint);
+                return path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
+            } else {
+                return false;
+            }
         }
     }
 
@@ -126,7 +157,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             brush = Brushes.White;
-            g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+            g.DrawLine(new Pen(brush, 7), startingPoint, endingPoint);
         }
     }
 }

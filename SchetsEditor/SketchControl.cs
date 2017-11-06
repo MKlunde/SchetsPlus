@@ -65,5 +65,8 @@ namespace SketchEditor
             sketch.AddObject(obj);
             currentObject = obj;
         }
+        public ISketchObject SketchObjectOnLocation(Point p) {
+            return sketch.ObjectOnLocation(p);
+        }
     }
 }

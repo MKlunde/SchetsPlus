@@ -196,10 +196,14 @@ namespace SketchEditor
     {
         public override string ToString() { return "gum"; }
 
-        //public override void BeingDrawn(Graphics g, Point p1, Point p2)
-        //{
-           // g.DrawLine(CreatePen(Brushes.White, 7), p1, p2);
-        //}
+        public override void MouseDown(SketchControl s, Point p) {
+            //base.MouseDown(s, p);
+            ISketchObject clickedObject = s.SketchObjectOnLocation(p);
+            if (clickedObject != null) {
+                Console.WriteLine(clickedObject.GetType());
+                s.Sketch.Objects.Remove(clickedObject); // Verwijder object waar met de gum op wordt geklikt
+            }
+        }
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
             return new EraserObject(s, startingPoint, new SolidBrush(s.PenColor));

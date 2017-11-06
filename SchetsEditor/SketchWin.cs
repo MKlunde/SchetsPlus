@@ -20,7 +20,7 @@ namespace SketchEditor
                 Assembly.GetExecutingAssembly()
         );
 
-        private void ResizeWin(object o, EventArgs ea)
+        private void ResizeWin(object sender, EventArgs e)
         {
             sketchControl.Size = new Size (
                 ClientSize.Width  - 70,
@@ -28,23 +28,23 @@ namespace SketchEditor
             panel.Location = new Point(64, this.ClientSize.Height - 30);
         }
 
-        private void ToolMenu_click(object obj, EventArgs ea)
+        private void ToolMenu_click(object sender, EventArgs e)
         {
-            currentTool = (ISketchTool)((ToolStripMenuItem)obj).Tag;
+            currentTool = (ISketchTool)((ToolStripMenuItem)sender).Tag;
         }
 
-        private void ToolButton_click(object obj, EventArgs ea)
+        private void ToolButton_click(object sender, EventArgs e)
         {
-            currentTool = (ISketchTool)((RadioButton)obj).Tag;
+            currentTool = (ISketchTool)((RadioButton)sender).Tag;
         }
 
-        public void Exit(object obj, EventArgs ea)
+        public void Exit(object obj, EventArgs e)
         {
             Close();
         }
         
-        private void SketchWin_FormClosing(object sender, FormClosingEventArgs e) {
-            parentWindow.SketchWinMenuItems(); // Werkt nog niet
+        private void SketchWin_FormClosed(object sender, FormClosedEventArgs e) {
+            parentWindow.SketchWinMenuItems(true);
         }
 
         public SketchWin(MainWindow parentWindow)
@@ -70,21 +70,21 @@ namespace SketchEditor
 
             sketchControl = new SketchControl();
             sketchControl.Location = new Point(64, 10);
-            sketchControl.MouseDown += (object o, MouseEventArgs mea) => {
+            sketchControl.MouseDown += (object sender, MouseEventArgs e) => {
                 mouseDown = true;
-                currentTool.MouseDown(sketchControl, mea.Location); 
+                currentTool.MouseDown(sketchControl, e.Location);
             };
-            sketchControl.MouseMove += (object o, MouseEventArgs mea) => {
+            sketchControl.MouseMove += (object sender, MouseEventArgs e) => {
                 if (mouseDown)
-                    currentTool.MouseDrag(sketchControl, mea.Location); 
+                    currentTool.MouseDrag(sketchControl, e.Location);
             };
-            sketchControl.MouseUp += (object o, MouseEventArgs mea) => {
+            sketchControl.MouseUp += (object sender, MouseEventArgs e) => {
                 if (mouseDown)
-                    currentTool.MouseUp(sketchControl, mea.Location);
+                    currentTool.MouseUp(sketchControl, e.Location);
                 mouseDown = false;
             };
-            sketchControl.KeyPress += (object o, KeyPressEventArgs kpea) => {
-                currentTool.Letter(sketchControl, kpea.KeyChar); 
+            sketchControl.KeyPress += (object sender, KeyPressEventArgs e) => {
+                currentTool.Letter(sketchControl, e.KeyChar); 
             };
             Controls.Add(sketchControl);
 
@@ -98,7 +98,7 @@ namespace SketchEditor
             CreateActionButtons(theColors);
             Resize += ResizeWin;
             ResizeWin(null, null);
-            FormClosing += SketchWin_FormClosing;
+            FormClosed += SketchWin_FormClosed;
         }
 
         private void CreateFileMenu()
@@ -110,29 +110,25 @@ namespace SketchEditor
         }
 
         private void CreateToolMenu(ICollection<ISketchTool> tools)
-        {   
-            ToolStripMenuItem menu = new ToolStripMenuItem("Tool");
+        {
             foreach (ISketchTool tool in tools)
             {   ToolStripItem item = new ToolStripMenuItem();
                 item.Tag = tool;
                 item.Text = tool.ToString();
                 item.Image = (Image)resourceManager.GetObject(tool.ToString());
                 item.Click += ToolMenu_click;
-                menu.DropDownItems.Add(item);
+                parentWindow.toolMenu.DropDownItems.Add(item);
             }
-            menuStrip.Items.Add(menu);
         }
 
         private void CreateActionMenu(String[] kleuren)
-        {   
-            ToolStripMenuItem menu = new ToolStripMenuItem("Actie");
-            menu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch );
-            menu.DropDownItems.Add("Roteer", null, sketchControl.RotateSketch );
+        {
+            parentWindow.actionMenu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch );
+            parentWindow.actionMenu.DropDownItems.Add("Roteer", null, sketchControl.RotateSketch );
             ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
             foreach (string k in kleuren)
                 submenu.DropDownItems.Add(k, null, sketchControl.ChangeColorViaMenu);
-            menu.DropDownItems.Add(submenu);
-            menuStrip.Items.Add(menu);
+            parentWindow.actionMenu.DropDownItems.Add(submenu);
         }
 
         private void CreateToolButtons(ICollection<ISketchTool> tools)

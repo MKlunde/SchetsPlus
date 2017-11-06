@@ -7,7 +7,7 @@ namespace SketchEditor
     public class MainWindow : Form
     {
         public MenuStrip menuStrip;
-        public ToolStripDropDownItem fileMenu, helpMenu;
+        public ToolStripDropDownItem fileMenu, toolMenu, actionMenu, helpMenu;
 
         public MainWindow(){
             ClientSize = new Size(800, 600);
@@ -27,23 +27,35 @@ namespace SketchEditor
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Nieuw", null, NewSketchWin));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("SketchPlus Afsluiten", null, Exit));
-            Console.WriteLine(fileMenu.DropDownItems.Count);
+
+            toolMenu = new ToolStripMenuItem("Tool");
+            toolMenu.DropDownItems.Add(new ToolStripMenuItem("Geen tools beschikbaar", null) { Enabled = false });
+
+            actionMenu = new ToolStripMenuItem("Actie");
+            actionMenu.DropDownItems.Add(new ToolStripMenuItem("Geen acties beschikbaar", null) { Enabled = false });
 
             // Maak dropdown-menu "Help"
             helpMenu = new ToolStripMenuItem("Help");
             helpMenu.DropDownItems.Add(new ToolStripMenuItem("Over \"Schets\"", null, About));
 
-            menuStrip.Items.AddRange(new ToolStripDropDownItem[] { fileMenu, helpMenu });
+            menuStrip.Items.AddRange(new ToolStripDropDownItem[] { fileMenu, toolMenu, actionMenu, helpMenu });
 
             SketchWinMenuItems();
         }
-        public void SketchWinMenuItems() {
-            bool atLeastOneWindow = MdiChildren.Length > 0;
-            GetDropDownItemFromMenu(fileMenu, "Sluiten").Enabled = atLeastOneWindow;
+        public void SketchWinMenuItems(bool forceClosed = false) {
+            bool atLeastOneSketchWin = MdiChildren.Length > 0 && !forceClosed;
+            GetDropDownItemFromMenu(fileMenu, "Sluiten").Enabled = atLeastOneSketchWin;
+            GetDropDownItemFromMenu(toolMenu, "Geen tools beschikbaar").Visible = !atLeastOneSketchWin;
+            GetDropDownItemFromMenu(actionMenu, "Geen acties beschikbaar").Visible = !atLeastOneSketchWin;
+            if (!atLeastOneSketchWin) {
+                for (int i = toolMenu.DropDownItems.Count - 1; i > 0; i--)
+                    toolMenu.DropDownItems.RemoveAt(i);
+                for (int i = actionMenu.DropDownItems.Count - 1; i > 0; i--)
+                    actionMenu.DropDownItems.RemoveAt(i);
+            }
         }
         public ToolStripMenuItem GetDropDownItemFromMenu(ToolStripDropDownItem menu, string text) {
             foreach (ToolStripMenuItem item in menu.DropDownItems) {
-                Console.WriteLine(item.Text);
                 if (item.Text == text) {
                     return item;
                 }

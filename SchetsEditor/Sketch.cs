@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace SketchEditor
 {
@@ -67,7 +68,6 @@ namespace SketchEditor
             for (int i = 0; i < objects.Count; i++) {
                 objects[i].Draw(bitmapGraphics);
             }
-            
             g.DrawImage(bitmap, 0, 0);
         }
         public void Resize(Size sz) {
@@ -85,6 +85,14 @@ namespace SketchEditor
         }
         public void Rotate() {
             // ...
+        }
+        public ISketchObject ObjectOnLocation(Point p) {
+            ISketchObject result = null;
+            for (int i = objects.Count-1; i >= 0; i--) {
+                if (objects[i].IsOnLocation(p))
+                    result = objects[i];
+            }
+            return result;
         }
 
 
