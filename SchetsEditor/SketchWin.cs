@@ -9,7 +9,7 @@ namespace SketchEditor
 {
     public class SketchWin : Form
     {
-        MainWindow parentWindow
+        MainWindow parentWindow;
         MenuStrip menuStrip;
         SketchControl sketchControl;
         ISketchTool currentTool;
@@ -23,24 +23,28 @@ namespace SketchEditor
         private void ResizeWin(object o, EventArgs ea)
         {
             sketchControl.Size = new Size (
-                this.ClientSize.Width  - 70,
-                this.ClientSize.Height - 50);
+                ClientSize.Width  - 70,
+                ClientSize.Height - 50);
             panel.Location = new Point(64, this.ClientSize.Height - 30);
         }
 
         private void ToolMenu_click(object obj, EventArgs ea)
         {
-            this.currentTool = (ISketchTool)((ToolStripMenuItem)obj).Tag;
+            currentTool = (ISketchTool)((ToolStripMenuItem)obj).Tag;
         }
 
         private void ToolButton_click(object obj, EventArgs ea)
         {
-            this.currentTool = (ISketchTool)((RadioButton)obj).Tag;
+            currentTool = (ISketchTool)((RadioButton)obj).Tag;
         }
 
-        private void Exit(object obj, EventArgs ea)
+        public void Exit(object obj, EventArgs ea)
         {
-            this.Close();
+            Close();
+        }
+        
+        private void SketchWin_FormClosing(object sender, FormClosingEventArgs e) {
+            parentWindow.SketchWinMenuItems(); // Werkt nog niet
         }
 
         public SketchWin(MainWindow parentWindow)
@@ -61,7 +65,7 @@ namespace SketchEditor
                 "Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan"
             };
 
-            this.ClientSize = new Size(700, 500);
+            ClientSize = new Size(700, 500);
             currentTool = theTools[0];
 
             sketchControl = new SketchControl();
@@ -82,26 +86,27 @@ namespace SketchEditor
             sketchControl.KeyPress += (object o, KeyPressEventArgs kpea) => {
                 currentTool.Letter(sketchControl, kpea.KeyChar); 
             };
-            this.Controls.Add(sketchControl);
+            Controls.Add(sketchControl);
 
             menuStrip = new MenuStrip();
             menuStrip.Visible = false;
-            this.Controls.Add(menuStrip);
-            this.CreateFileMenu();
-            this.CreateToolMenu(theTools);
-            this.CreateActionMenu(theColors);
-            this.CreateToolButtons(theTools);
-            this.CreateActionButtons(theColors);
-            this.Resize += this.ResizeWin;
-            this.ResizeWin(null, null);
+            Controls.Add(menuStrip);
+            CreateFileMenu();
+            CreateToolMenu(theTools);
+            CreateActionMenu(theColors);
+            CreateToolButtons(theTools);
+            CreateActionButtons(theColors);
+            Resize += ResizeWin;
+            ResizeWin(null, null);
+            FormClosing += SketchWin_FormClosing;
         }
 
         private void CreateFileMenu()
         {   
-            ToolStripMenuItem menu = new ToolStripMenuItem("Bestand");
+            /*ToolStripMenuItem menu = new ToolStripMenuItem("Bestand");
             menu.MergeAction = MergeAction.MatchOnly;
             menu.DropDownItems.Add("Sluiten", null, this.Exit);
-            menuStrip.Items.Add(menu);
+            menuStrip.Items.Add(menu);*/
         }
 
         private void CreateToolMenu(ICollection<ISketchTool> tools)
@@ -112,7 +117,7 @@ namespace SketchEditor
                 item.Tag = tool;
                 item.Text = tool.ToString();
                 item.Image = (Image)resourceManager.GetObject(tool.ToString());
-                item.Click += this.ToolMenu_click;
+                item.Click += ToolMenu_click;
                 menu.DropDownItems.Add(item);
             }
             menuStrip.Items.Add(menu);
@@ -144,8 +149,8 @@ namespace SketchEditor
                 b.Image = (Image)resourceManager.GetObject(tool.ToString());
                 b.TextAlign = ContentAlignment.TopCenter;
                 b.ImageAlign = ContentAlignment.BottomCenter;
-                b.Click += this.ToolButton_click;
-                this.Controls.Add(b);
+                b.Click += ToolButton_click;
+                Controls.Add(b);
                 if (t == 0) b.Select();
                 t++;
             }
@@ -155,7 +160,7 @@ namespace SketchEditor
         {   
             panel = new Panel();
             panel.Size = new Size(600, 24);
-            this.Controls.Add(panel);
+            Controls.Add(panel);
             
             Button b; Label l; ComboBox cbb;
             b = new Button(); 
