@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Resources;
 using System.IO;
 using System.Drawing.Imaging;
+using System.Xml.Serialization;
 
 namespace SketchEditor
 {
@@ -154,35 +155,107 @@ namespace SketchEditor
             }
         }
 
-        public void Store(string filename)
-        {          
+        public void LoadProject()
+        {
+            OpenFileDialog d = new OpenFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Project laden...";
+            d.Filter = "Xml files (*.Xml)|*.Xml";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filename = d.FileName;
+                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
+                    XmlSerializer reader = new XmlSerializer(typeof(List<ISketchObject>));
+                    StreamReader file = new StreamReader(filename);
+                    this.sketchControl.Sketch.Objects = (List<ISketchObject>)reader.Deserialize(file);
+                    file.Close();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("test load failed");
+                }
+            }
+        }
+        public void Store()
+        {
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Opslaan als project...";
+            d.Filter = "Xml files (*.Xml)|*.Xml";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filename = d.FileName;
+                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
+                    XmlSerializer ser = new XmlSerializer(typeof(List<ISketchObject>));
+                    TextWriter writer = new StreamWriter(filename);
+                    var b = this.sketchControl.Sketch.Objects;
+                    ser.Serialize(writer, b);
+                    writer.Close();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("test store failed");
+                }
+            }
+            /*
             using (StreamWriter sw = File.CreateText(filename))
             {//Open een writer naar gekozen bestand
                 //File.WriteAllText(filename, String.Empty);// maak het bestand leeg
                 foreach (var obj in this.sketchControl.Sketch.Objects) //Selecteer elk object
                 {
-                    sw.WriteLine(obj.name); //Schrijf het object naar een bestand
+                    sw.WriteLine(obj); //Schrijf het object naar een bestand
                 }
                 sw.Close();
-            }
+            }*/
         }
 
-        public void StoreImage(string filename)
+        public void StoreImage()
         {
-            
-            System.Diagnostics.Debug.WriteLine("Bitmap laden");
-            Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
-            //if (File.Exists(filename))
-               // File.Create(filename).Dispose();
-            System.Diagnostics.Debug.WriteLine(img.RawFormat);
-            img.Save(filename, ImageFormat.Bmp);//Save image
-            img.Dispose();
-            /*
-            System.Diagnostics.Debug.WriteLine("bitmap laden");
-            //if (File.Exists(filename))           
-                File.Create(filename).Dispose();
-            System.Diagnostics.Debug.WriteLine("bitmap laden");
-            this.sketchControl.Sketch.bitmapImage.Save(filename, ImageFormat.Bmp);*/
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Opslaan als afbeelding...";
+            d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string fileName = d.FileName;
+                    File.Create(fileName);//Maak een nieuwe file aan  
+                    Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
+                    //var format = System.Drawing.Imaging.ImageFormat.Jpeg;//default
+                                                                         /*switch (System.IO.Path.GetExtension(fileName))
+                                                                         {
+                                                                             case (".png"):
+                                                                                 format = System.Drawing.Imaging.ImageFormat.Png;
+                                                                                 break;
+                                                                             case (".jpg"):
+                                                                                 format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                                                                                 break;
+                                                                             case (".Bmp"):
+                                                                                 format = System.Drawing.Imaging.ImageFormat.Bmp;
+                                                                                 break;
+                                                                             default:
+                                                                                 fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
+                                                                                 System.Diagnostics.Debug.WriteLine("default called");
+                                                                                 break;
+                                                                         }   */
+                    if (!System.IO.Path.HasExtension(fileName) || System.IO.Path.GetExtension(fileName) != "jpg") 
+                        fileName = fileName + ".jpg";
+                    img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    img.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("test saveAsImage failed");
+                }
+            }
         }
 
         private void CreateActionButtons(String[] kleuren)

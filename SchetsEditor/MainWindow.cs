@@ -27,6 +27,7 @@ namespace SketchEditor
             // Maak dropdown-menu "Bestand"
             fileMenu = new ToolStripMenuItem("Bestand");
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Nieuw", null, NewSketchWin));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Project laden...", null, LoadProject));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als project...", null, Save));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als afbeelding...", null, SaveAsImage));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false });
@@ -92,51 +93,22 @@ namespace SketchEditor
             catch { }
             SketchWinMenuItems();
         }
+        private void LoadProject(object sender, EventArgs e)
+        {
+            SketchWin s = ActiveMdiChild as SketchWin;
+            s.LoadProject();
+        }
         
         private void Save(object sender, EventArgs e)
         {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Opslaan als project...";
-            d.Filter = "SchetsPlus-projecten (*.sketch)|*.sketch";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    string filename = d.FileName;
-                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
-                    SketchWin s = ActiveMdiChild as SketchWin;
-                    s.Store(filename);
-                }
-                catch(Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("Test save failed");
-                }
-            }
+            SketchWin s = ActiveMdiChild as SketchWin;
+            s.Store();
         }
 
         private void SaveAsImage(object sender, EventArgs e)
         {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Opslaan als afbeelding...";
-            d.Filter = "Afbeeldingsbestanden (*.Bmp, *.Jpeg, .*Png) | *.Bmp; *.Jpeg; *.Png";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    string filename = d.FileName;
-                    File.Create(filename);//Maak een nieuwe file aan
-                    SketchWin s = ActiveMdiChild as SketchWin;
-                    s.StoreImage(filename);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("test saveAsImage failed");
-                }
-            }
+            SketchWin s = ActiveMdiChild as SketchWin;
+            s.StoreImage();
         }
 
         private void Exit(object sender, EventArgs e) {

@@ -13,6 +13,7 @@ namespace SketchEditor
 
         public List<ISketchObject> Objects {
             get { return objects; }
+            set { objects = value; }
         }
         public Bitmap bitmapImage{get{return bitmap; } }
 
