@@ -14,6 +14,9 @@ namespace SketchEditor
         void Finish();
         void Draw(Graphics g);
         bool IsOnLocation(Point p);
+
+        //Declaratie van get en set methoden
+        string name { get; }
     }
 
     public abstract class StartingPointObject : ISketchObject
@@ -23,6 +26,8 @@ namespace SketchEditor
         protected Brush brush, finishedBrush, unfinishedBrush;
         protected String text;
         protected bool finished = false;
+
+        public virtual string name { get { return "StartingPointObject"; } }
 
         public StartingPointObject(SketchControl s, Point startingPoint, SolidBrush brush) {
             this.s = s;
@@ -61,6 +66,7 @@ namespace SketchEditor
 
     public class TextObject : StartingPointObject
     {
+        public override string name { get { return ("TextObject"); } }
         public TextObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -80,6 +86,8 @@ namespace SketchEditor
 
     public class EllipseObject : DualPointObject
     {
+        public override string name { get { return ("EllipseObject"); } }
+
         public EllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -93,6 +101,7 @@ namespace SketchEditor
     }
     public class FilledEllipseObject : EllipseObject
     {
+        public override string name { get { return ("FilledEllipseObject"); } }
         public FilledEllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -104,6 +113,7 @@ namespace SketchEditor
 
     public class RectangleObject : DualPointObject
     {
+        public override string name { get { return ("RectangleObject"); } }
         public RectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -117,6 +127,7 @@ namespace SketchEditor
     }
     public class FilledRectangleObject : RectangleObject
     {
+        public override string name { get { return ("FilledRectangleObject"); } }
         public FilledRectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -127,6 +138,7 @@ namespace SketchEditor
 
     public class LineObject : DualPointObject
     {
+        public override string name { get { return ("LineObject"); } }
         public LineObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
 
         public override void Draw(Graphics g) {
@@ -147,6 +159,7 @@ namespace SketchEditor
 
     public class PenObject : LineObject
     {
+        public override string name { get { return ("PenObject"); } }
         public PenObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
     }
 

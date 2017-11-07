@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace SketchEditor
 {
@@ -17,6 +18,7 @@ namespace SketchEditor
             MainMenuStrip = menuStrip;
             NewSketchWin(); // Open lege SketchWin bij opstarten
         }
+
         private void CreateMenuStrip() {
             // Initialiseer menuStrip
             menuStrip = new MenuStrip();
@@ -25,6 +27,8 @@ namespace SketchEditor
             // Maak dropdown-menu "Bestand"
             fileMenu = new ToolStripMenuItem("Bestand");
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Nieuw", null, NewSketchWin));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Save project", null, Save));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Save as image", null, SaveAsImage));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("SketchPlus Afsluiten", null, Exit));
 
@@ -42,6 +46,7 @@ namespace SketchEditor
 
             SketchWinMenuItems();
         }
+
         public void SketchWinMenuItems(bool forceClosed = false) {
             bool atLeastOneSketchWin = MdiChildren.Length > 0 && !forceClosed;
             GetDropDownItemFromMenu(fileMenu, "Sluiten").Enabled = atLeastOneSketchWin;
@@ -54,6 +59,7 @@ namespace SketchEditor
                     actionMenu.DropDownItems.RemoveAt(i);
             }
         }
+
         public ToolStripMenuItem GetDropDownItemFromMenu(ToolStripDropDownItem menu, string text) {
             foreach (ToolStripMenuItem item in menu.DropDownItems) {
                 if (item.Text == text) {
@@ -62,6 +68,7 @@ namespace SketchEditor
             }
             return null;
         }
+
         private void About(object o, EventArgs ea) {
             MessageBox.Show("SchetsPlus versie 0.1\nDoor Menno Klunder en Mats Gottenbos\nGebaseerd op Schets versie 1.0 - (c) UU Informatica 2010",
                 "Over \"Schets\"",
@@ -76,6 +83,7 @@ namespace SketchEditor
             s.Show();
             SketchWinMenuItems();
         }
+
         public void CloseActiveSketchWin(object sender = null, EventArgs e = null) {
             SketchWin s = ActiveMdiChild as SketchWin;
             try {
@@ -84,6 +92,53 @@ namespace SketchEditor
             catch { }
             SketchWinMenuItems();
         }
+        
+        private void Save(object sender, EventArgs e)
+        {
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Save project";
+            d.Filter = "txt files (*.txt)|*.txt";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filename = d.FileName;
+                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
+                    SketchWin s = ActiveMdiChild as SketchWin;
+                    s.Store(filename);
+                }
+                catch(Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("test save failed");
+                }
+            }
+        }
+
+        private void SaveAsImage(object sender, EventArgs e)
+        {
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Save as image";
+            d.Filter = "(*.Bmp, *.Jpeg, .*Png) | *.Bmp; *.Jpeg; *.Png";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filename = d.FileName;
+                    File.Create(filename);//Maak een nieuwe file aan
+                    SketchWin s = ActiveMdiChild as SketchWin;
+                    s.StoreImage(filename);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("test saveAsImage failed");
+                }
+            }
+        }
+
         private void Exit(object sender, EventArgs e) {
             Close();
         }

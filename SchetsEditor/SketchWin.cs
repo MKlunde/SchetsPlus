@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace SketchEditor
 {
@@ -150,6 +152,37 @@ namespace SketchEditor
                 if (t == 0) b.Select();
                 t++;
             }
+        }
+
+        public void Store(string filename)
+        {          
+            using (StreamWriter sw = File.CreateText(filename))
+            {//Open een writer naar gekozen bestand
+                //File.WriteAllText(filename, String.Empty);// maak het bestand leeg
+                foreach (var obj in this.sketchControl.Sketch.Objects) //Selecteer elk object
+                {
+                    sw.WriteLine(obj.name); //Schrijf het object naar een bestand
+                }
+                sw.Close();
+            }
+        }
+
+        public void StoreImage(string filename)
+        {
+            
+            System.Diagnostics.Debug.WriteLine("bitmap laden");
+            Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
+            //if (File.Exists(filename))
+               // File.Create(filename).Dispose();
+            System.Diagnostics.Debug.WriteLine(img.RawFormat);
+            img.Save(filename, ImageFormat.Bmp);//Save image
+            img.Dispose();
+            /*
+            System.Diagnostics.Debug.WriteLine("bitmap laden");
+            //if (File.Exists(filename))           
+                File.Create(filename).Dispose();
+            System.Diagnostics.Debug.WriteLine("bitmap laden");
+            this.sketchControl.Sketch.bitmapImage.Save(filename, ImageFormat.Bmp);*/
         }
 
         private void CreateActionButtons(String[] kleuren)
