@@ -14,7 +14,9 @@ namespace SketchEditor
         public List<ISketchObject> Objects {
             get { return objects; }
         }
-        public Bitmap bitmapImage{get{return bitmap; } }
+        public Bitmap Bitmap{
+            get {return bitmap; }
+        }
 
         public Sketch(SketchControl s) {
             this.s = s;

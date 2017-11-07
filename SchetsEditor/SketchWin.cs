@@ -161,7 +161,7 @@ namespace SketchEditor
                 //File.WriteAllText(filename, String.Empty);// maak het bestand leeg
                 foreach (var obj in this.sketchControl.Sketch.Objects) //Selecteer elk object
                 {
-                    sw.WriteLine(obj.name); //Schrijf het object naar een bestand
+                    sw.WriteLine(obj.Name); //Schrijf het object naar een bestand
                 }
                 sw.Close();
             }
@@ -171,7 +171,7 @@ namespace SketchEditor
         {
             
             System.Diagnostics.Debug.WriteLine("Bitmap laden");
-            Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
+            Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
             //if (File.Exists(filename))
                // File.Create(filename).Dispose();
             System.Diagnostics.Debug.WriteLine(img.RawFormat);

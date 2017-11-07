@@ -95,8 +95,8 @@ namespace SketchEditor
         
         private void Save(object sender, EventArgs e)
         {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
+            SaveFileDialog d = new SaveFileDialog(); // Selecteer file
+            // Instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Opslaan als project...";
             d.Filter = "SchetsPlus-projecten (*.sketch)|*.sketch";
@@ -105,13 +105,13 @@ namespace SketchEditor
                 try
                 {
                     string filename = d.FileName;
-                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
+                    System.Diagnostics.Debug.WriteLine("Filename = " + filename);
                     SketchWin s = ActiveMdiChild as SketchWin;
                     s.Store(filename);
                 }
                 catch(Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Test save failed");
+                    System.Diagnostics.Debug.WriteLine("Test project save failed");
                 }
             }
         }
@@ -125,16 +125,14 @@ namespace SketchEditor
             d.Filter = "Afbeeldingsbestanden (*.Bmp, *.Jpeg, .*Png) | *.Bmp; *.Jpeg; *.Png";
             if (d.ShowDialog() == DialogResult.OK)
             {
-                try
-                {
+                try {
                     string filename = d.FileName;
                     File.Create(filename);//Maak een nieuwe file aan
                     SketchWin s = ActiveMdiChild as SketchWin;
                     s.StoreImage(filename);
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("test saveAsImage failed");
+                catch (Exception ex) {
+                    System.Diagnostics.Debug.WriteLine("Test image save failed");
                 }
             }
         }

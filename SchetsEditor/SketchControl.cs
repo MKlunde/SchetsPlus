@@ -11,6 +11,7 @@ namespace SketchEditor
         private Sketch sketch;
         private Color penColor;
         private ISketchObject currentObject;
+        private Font textFont = new Font("Tahoma", 40);
 
         public Color PenColor {
             get { return penColor; }
@@ -21,12 +22,16 @@ namespace SketchEditor
         public ISketchObject CurrentObject {
             get { return currentObject; }
         }
+        public Font TextFont {
+            get { return textFont; }
+        }
+
         public SketchControl() {
-            this.BorderStyle = BorderStyle.Fixed3D;
-            this.sketch = new Sketch(this);
-            this.Paint += this.DrawSketch;
-            this.Resize += this.ResizeControl;
-            this.ResizeControl(null, null);
+            BorderStyle = BorderStyle.Fixed3D;
+            sketch = new Sketch(this);
+            Paint += DrawSketch;
+            Resize += ResizeControl;
+            ResizeControl(null, null);
         }
         protected override void OnPaintBackground(PaintEventArgs e) {
         }
@@ -34,8 +39,8 @@ namespace SketchEditor
             sketch.Draw(pea.Graphics);
         }
         private void ResizeControl(object o, EventArgs ea) {
-            sketch.Resize(this.ClientSize);
-            this.Invalidate();
+            sketch.Resize(ClientSize);
+            Invalidate();
         }
         public Graphics CreateBitmapGraphics() {
             Graphics g = sketch.BitmapGraphics;
@@ -44,12 +49,12 @@ namespace SketchEditor
         }
         public void ClearSketch(object o, EventArgs ea) {
             sketch.Clear();
-            this.Invalidate();
+            Invalidate();
         }
         public void RotateSketch(object o, EventArgs ea) {
-            sketch.Resize(new Size(this.ClientSize.Height, this.ClientSize.Width));
+            sketch.Resize(new Size(ClientSize.Height, ClientSize.Width));
             sketch.Rotate();
-            this.Invalidate();
+            Invalidate();
         }
         public void ChangeColor(object obj, EventArgs ea) {
             string colorName = ((ComboBox)obj).Text;
