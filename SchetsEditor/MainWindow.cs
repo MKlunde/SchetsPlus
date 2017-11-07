@@ -27,8 +27,8 @@ namespace SketchEditor
             // Maak dropdown-menu "Bestand"
             fileMenu = new ToolStripMenuItem("Bestand");
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Nieuw", null, NewSketchWin));
-            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Save project", null, Save));
-            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Save as image", null, SaveAsImage));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als project...", null, Save));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als afbeelding...", null, SaveAsImage));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("SketchPlus Afsluiten", null, Exit));
 
@@ -98,8 +98,8 @@ namespace SketchEditor
             SaveFileDialog d = new SaveFileDialog(); //selecteer file
             // instellingen dialog
             d.InitialDirectory = "./";
-            d.Title = "Save project";
-            d.Filter = "txt files (*.txt)|*.txt";
+            d.Title = "Opslaan als project...";
+            d.Filter = "SchetsPlus-projecten (*.sketch)|*.sketch";
             if (d.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -111,7 +111,7 @@ namespace SketchEditor
                 }
                 catch(Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("test save failed");
+                    System.Diagnostics.Debug.WriteLine("Test save failed");
                 }
             }
         }
@@ -121,8 +121,8 @@ namespace SketchEditor
             SaveFileDialog d = new SaveFileDialog(); //selecteer file
             // instellingen dialog
             d.InitialDirectory = "./";
-            d.Title = "Save as image";
-            d.Filter = "(*.Bmp, *.Jpeg, .*Png) | *.Bmp; *.Jpeg; *.Png";
+            d.Title = "Opslaan als afbeelding...";
+            d.Filter = "Afbeeldingsbestanden (*.Bmp, *.Jpeg, .*Png) | *.Bmp; *.Jpeg; *.Png";
             if (d.ShowDialog() == DialogResult.OK)
             {
                 try

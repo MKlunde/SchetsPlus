@@ -170,7 +170,7 @@ namespace SketchEditor
         public void StoreImage(string filename)
         {
             
-            System.Diagnostics.Debug.WriteLine("bitmap laden");
+            System.Diagnostics.Debug.WriteLine("Bitmap laden");
             Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
             //if (File.Exists(filename))
                // File.Create(filename).Dispose();
