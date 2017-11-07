@@ -1,0 +1,9 @@
+C:\Users\menno\source\repos\smiley\smiley\bin\Debug\smiley.exe.config
+C:\Users\menno\source\repos\smiley\smiley\bin\Debug\smiley.exe
+C:\Users\menno\source\repos\smiley\smiley\bin\Debug\smiley.pdb
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.Properties.Resources.resources
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.csproj.GenerateResource.Cache
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.csproj.CoreCompileInputs.cache
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.exe
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.pdb
+C:\Users\menno\source\repos\smiley\smiley\obj\Debug\smiley.csprojResolveAssemblyReference.cache
