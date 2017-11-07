@@ -209,7 +209,10 @@ namespace SketchEditor
                 //File.WriteAllText(filename, String.Empty);// maak het bestand leeg
                 foreach (var obj in this.sketchControl.Sketch.Objects) //Selecteer elk object
                 {
+
                     sw.WriteLine(obj); //Schrijf het object naar een bestand
+                    sw.WriteLine(obj.Name); //Schrijf het object naar een bestand
+
                 }
                 sw.Close();
             }*/
@@ -228,24 +231,24 @@ namespace SketchEditor
                 {
                     string fileName = d.FileName;
                     File.Create(fileName);//Maak een nieuwe file aan  
-                    Bitmap img = this.sketchControl.Sketch.bitmapImage;//Get bitmap
+                    Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
                     //var format = System.Drawing.Imaging.ImageFormat.Jpeg;//default
-                                                                         /*switch (System.IO.Path.GetExtension(fileName))
-                                                                         {
-                                                                             case (".png"):
-                                                                                 format = System.Drawing.Imaging.ImageFormat.Png;
-                                                                                 break;
-                                                                             case (".jpg"):
-                                                                                 format = System.Drawing.Imaging.ImageFormat.Jpeg;
-                                                                                 break;
-                                                                             case (".Bmp"):
-                                                                                 format = System.Drawing.Imaging.ImageFormat.Bmp;
-                                                                                 break;
-                                                                             default:
-                                                                                 fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
-                                                                                 System.Diagnostics.Debug.WriteLine("default called");
-                                                                                 break;
-                                                                         }   */
+                    /*switch (System.IO.Path.GetExtension(fileName))
+                     {
+                    case (".png"):
+                    format = System.Drawing.Imaging.ImageFormat.Png;
+                        break;
+                   case (".jpg"):
+                        format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                   break;
+                   case (".Bmp"):
+                   format = System.Drawing.Imaging.ImageFormat.Bmp;
+                    break;
+                   default:
+                   fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
+                   System.Diagnostics.Debug.WriteLine("default called");
+                    break;
+                   }   */
                     if (!System.IO.Path.HasExtension(fileName) || System.IO.Path.GetExtension(fileName) != "jpg") 
                         fileName = fileName + ".jpg";
                     img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);

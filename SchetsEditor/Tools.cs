@@ -42,8 +42,8 @@ namespace SketchEditor
         public override void MouseUp(SketchControl s, Point p) {
             base.MouseUp(s, p);
             ISketchObject obj = CreateObject(s, p, new SolidBrush(s.PenColor));
+            obj.Finish();
             s.SketchAddObject(obj);
-           // FinishCurrentObject(s);
         }
 
         public override void Letter(SketchControl s, char c)
@@ -197,16 +197,25 @@ namespace SketchEditor
         public override string ToString() { return "gum"; }
 
         public override void MouseDown(SketchControl s, Point p) {
-            //base.MouseDown(s, p);
-            ISketchObject clickedObject = s.SketchObjectOnLocation(p);
-            if (clickedObject != null) {
-                Console.WriteLine(clickedObject.GetType());
-                s.Sketch.Objects.Remove(clickedObject); // Verwijder object waar met de gum op wordt geklikt
-            }
+            EraseObjectOnLocation(s, p);
         }
+        public override void MouseDrag(SketchControl s, Point p) {
+            EraseObjectOnLocation(s, p);
+        }
+        public override void MouseUp(SketchControl s, Point p) { }
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new EraserObject(s, startingPoint, new SolidBrush(s.PenColor));
+            //return new EraserObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return null;
+        }
+
+        public void EraseObjectOnLocation(SketchControl s, Point p) {
+            ISketchObject clickedObject = s.SketchObjectOnLocation(p);
+            if (clickedObject != null) {
+                //Console.WriteLine(clickedObject.Name);
+                s.Sketch.Objects.Remove(clickedObject); // Verwijder object waar met de gum op wordt geklikt
+                s.Invalidate();
+            }
         }
     }
 }
