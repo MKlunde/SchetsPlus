@@ -181,6 +181,14 @@ namespace SketchEditor
 
         public void LoadProject()
         {
+            if (this.sketchControl.Sketch.listChanged)
+            {
+                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil doorgaan?", "Alert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
             OpenFileDialog d = new OpenFileDialog(); //selecteer file
                                                      // instellingen dialog
             d.InitialDirectory = "./";
@@ -228,6 +236,19 @@ namespace SketchEditor
                                     obj = new FilledRectangleObject(s, p1, new SolidBrush(col));
                                     break;
 
+                                case ("LineObject"):
+                                    obj = new LineObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                case ("PenObject"):
+                                    obj = new PenObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                case ("TextObject"):
+                                    obj = new TextObject(s, p1, new SolidBrush(col));
+                                    obj.AddText(text);
+                                    break;
+
                                 default:
                                     obj = new RectangleObject(s, p1, new SolidBrush(col));
                                     break;
@@ -244,8 +265,10 @@ namespace SketchEditor
                     }
 
                 }
+                file.Close();
                 this.sketchControl.Invalidate();
-                System.Diagnostics.Debug.WriteLine("end loop");
+                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+                
             }
         }
             
