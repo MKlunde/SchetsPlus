@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
-using System.IO;
 
 namespace SketchEditor
 {
@@ -18,7 +17,8 @@ namespace SketchEditor
         bool mouseDown;
 
         Button clearButton, rotateButton, colorButton;
-        Label colorLabel;
+        Label widthLabel, widthValueLabel;
+        TrackBar widthTrackbar;
 
         ResourceManager resourceManager = new ResourceManager(
                 "SchetsEditor.Properties.Resources",
@@ -107,7 +107,7 @@ namespace SketchEditor
             };
             Controls.Add(sketchControl);
 
-            menuStrip = new MenuStrip();
+            menuStrip = new MenuStrip(); // Maak menuStrip voor alle menu's
             menuStrip.Visible = false;
             Controls.Add(menuStrip);
             CreateToolMenu(theTools);
@@ -118,10 +118,11 @@ namespace SketchEditor
             ResizeWin(null, null);
             FormClosing += SketchWin_FormClosing;
 
-            sketchControl.ChangeColor(Color.Black);
+            sketchControl.ChangePenColor(Color.Black); // Zet kleur standaard op zwart
+            sketchControl.ChangePenWidth(5); // Zet breedte pen standaard op 5
         }
 
-        private void CreateToolMenu(ICollection<ISketchTool> tools)
+        private void CreateToolMenu(ICollection<ISketchTool> tools) // Maak menu Tool
         {
             if (parentWindow.MdiChildren.Length == 0) {
                 foreach (ISketchTool tool in tools) {
@@ -135,7 +136,7 @@ namespace SketchEditor
             }
         }
 
-        private void CreateActionMenu(String[] kleuren)
+        private void CreateActionMenu(String[] kleuren) // Maak menu Actie
         {
             if (parentWindow.MdiChildren.Length == 0) {
                 parentWindow.actionMenu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch);
@@ -147,7 +148,7 @@ namespace SketchEditor
             }
         }
 
-        private void CreateToolButtons(ICollection<ISketchTool> tools)
+        private void CreateToolButtons(ICollection<ISketchTool> tools) // Maak tool buttons
         {
             int t = 0;
             foreach (ISketchTool tool in tools)
@@ -173,117 +174,122 @@ namespace SketchEditor
             }
         }
         private void CreateActionButtons(String[] kleuren) {
+            // Maak panel
             panel = new Panel();
-            panel.Size = new Size(600, 24);
+            panel.Size = new Size(630, 24);
             Controls.Add(panel);
 
             clearButton = new Button();
             rotateButton = new Button();
             colorButton = new Button();
-            colorLabel = new Label();
+            widthLabel = new Label();
+            widthTrackbar = new TrackBar();
+            widthValueLabel = new Label();
 
             clearButton.FlatStyle = rotateButton.FlatStyle = colorButton.FlatStyle = FlatStyle.Flat;
             clearButton.Cursor = rotateButton.Cursor = colorButton.Cursor = Cursors.Hand;
 
-            clearButton.Text = "Clear";
-            clearButton.Location = new Point(0, 0);
+            // Wissen-knop
+            clearButton.Text = "Wissen";
+            clearButton.Location = new Point(2, 0);
             clearButton.Click += sketchControl.ClearSketch;
             panel.Controls.Add(clearButton);
 
+            // Roteren-knop
             rotateButton.Text = "Rotate";
-            rotateButton.Location = new Point(80, 0);
+            rotateButton.Location = new Point(135, 0);
             rotateButton.Click += sketchControl.RotateSketch;
             panel.Controls.Add(rotateButton);
 
+            // Penkleur-knop
             colorButton.Text = "Penkleur";
             ChangeColorButtonColor(sketchControl.PenColor);
             colorButton.FlatAppearance.BorderColor = Color.Black;
-            colorButton.Location = new Point(180, 0);
+            colorButton.Location = new Point(270, 0);
             colorButton.Click += ColorButton_click;
             panel.Controls.Add(colorButton);
 
-            /*/*colorLabel.Text = "Penkleur:";
-            colorLabel.Location = new Point(180, 3);
-            colorLabel.AutoSize = true;
-            panel.Controls.Add(colorLabel);
+            // Breedte pen-label
+            widthLabel.Text = "Breedte pen:";
+            widthLabel.Location = new Point(405, 4); 
+            widthLabel.AutoSize = true;
+            panel.Controls.Add(widthLabel);
 
-            ComboBox cbb = new ComboBox();
-            cbb.Location = new Point(240, 0);
-            cbb.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbb.SelectedValueChanged += sketchControl.ChangeColorFromComboBox;
-            foreach (string k in kleuren)
-                cbb.Items.Add(k);
-            cbb.SelectedIndex = 0;
-            panel.Controls.Add(cbb);*/
+            // Breedte pen-trackbar
+            widthTrackbar.Location = new Point(465, 0);
+            widthTrackbar.Width = 150;
+            widthTrackbar.Minimum = 1;
+            widthTrackbar.Maximum = 20;
+            widthTrackbar.Value = 5;
+            widthTrackbar.ValueChanged += sketchControl.ChangePenWidthFromTrackbar;
+            panel.Controls.Add(widthTrackbar);
+
+            // Label voor waarde van breedte pen-trackbar
+            widthValueLabel.Text = sketchControl.PenWidth.ToString();
+            widthValueLabel.Location = new Point(615, 4);
+            widthValueLabel.AutoSize = true;
+            panel.Controls.Add(widthValueLabel);
         }
 
-        public void ChangeColorButtonColor(Color col) {
+        public void ChangeColorButtonColor(Color col) { // Pas kleur van colorButton aan
             colorButton.BackColor = col;
-            Console.WriteLine(sketchControl.PenColor.GetBrightness());
-            if(sketchControl.PenColor.GetBrightness() > 0.4)
+            if(sketchControl.PenColor.GetBrightness() > 0.5)
                 colorButton.ForeColor = Color.Black;
             else
                 colorButton.ForeColor = Color.White;
         }
+        public void ChangeWidthButtonValue(int w) { // Pas waarde van label bij widthTrackbar aan
+            widthTrackbar.Value = w;
+            widthValueLabel.Text = w.ToString();
+        }
 
-        void ColorButton_click(object sender, EventArgs e) {
+        void ColorButton_click(object sender, EventArgs e) { // Open color picker
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.Color = sketchControl.PenColor;
             DialogResult result = colorDialog.ShowDialog();
             if (result == DialogResult.OK) {
-                sketchControl.ChangeColor(colorDialog.Color);
+                sketchControl.ChangePenColor(colorDialog.Color);
             }
         }
 
-        public void SaveProject()
-        {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Opslaan als project...";
-            d.Filter = "Sketch files (*.sketch)|*.sketch";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                string filename = d.FileName;
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename))
-                {
-                    foreach(ISketchObject obj in this.sketchControl.Sketch.Objects)
-                    {
-                        file.WriteLine(obj.Name);
-                        file.WriteLine(obj.StartingPoint);
-                        file.WriteLine(obj.EndingPoint);
-                        file.WriteLine(obj.Brush);
-                        file.WriteLine(obj.Text);
-                        //file.WriteLine(obj.rotation);
-                    }
-                }
-                sketchControl.Sketch.listChanged = false; // Geef aan dat er geen nieuwe wijzigingen zijn aan de sketch
-            }
-        }
-
-        public void ExportImage()
-        {
-            SaveFileDialog d = new SaveFileDialog(); // Selecteer file
+        public void SaveProject() {
+            SaveFileDialog d = new SaveFileDialog(); // Open file-window
             // Instellingen dialog
             d.InitialDirectory = "./";
-            d.Title = "Exporteer afbeelding...";
-            d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
+            d.Title = "Opslaan als project";
+            d.Filter = "Sketch-project (*.sketch)|*.sketch";
+            if (d.ShowDialog() == DialogResult.OK) {
+                string filename = d.FileName;
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename)) {
+                    foreach (ISketchObject obj in this.sketchControl.Sketch.Objects) { // Voor elk getekend object
+                        file.WriteLine(obj.ToString()); // Schrijf een regel met info over het object in het bestand
+                    }
+                }
+                sketchControl.Sketch.listChanged = false; // Geef aan dat er geen nieuwe wijzigingen meer zijn aan de sketch
+            }
+        }
+
+        public void ExportImage() {
+            SaveFileDialog d = new SaveFileDialog(); // Open file-window
+            // Instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Afbeelding exporteren";
+            d.Filter = "PNG-afbeelding (*.png)|*.png|JPG-afbeelding (.*jpg)|*.jpg|Bitmap (*.bmp)|*.bmp"; // Ondersteunde bestandtypen zijn PNG, JPG en BMP
             if (d.ShowDialog() == DialogResult.OK) {
                 string fileName = d.FileName;
-                Bitmap img = sketchControl.Sketch.Bitmap; // Get bitmap
-                switch (System.IO.Path.GetExtension(fileName)) // Save op basis van extensie
-                {
-                    case (".Png"):
+                Bitmap img = sketchControl.Sketch.Bitmap; // De bitmap die opgeslagen moet worden
+                switch (System.IO.Path.GetExtension(fileName)){ // Kies juiste format op basis van extensie
+                    case (".png"):
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
                         break;
                     case (".jpg"):
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
                         break;
-                    case (".Bmp"):
+                    case (".bmp"):
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
                         break;
-                    default:
-                        fileName = fileName + ".png"; // Geef een extensie aan nieuwe files
+                    default: // Kies standaard PNG
+                        fileName = fileName + ".png";
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
                         break;
                 }

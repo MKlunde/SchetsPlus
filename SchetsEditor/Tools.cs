@@ -59,7 +59,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) { }
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new TextObject(s, startingPoint, brush);
+            return new TextObject(s, startingPoint, brush, s.PenWidth);
         }
     }
 
@@ -117,7 +117,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new EllipseObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new EllipseObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
 
@@ -131,7 +131,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new FilledEllipseObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new FilledEllipseObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
 
@@ -145,7 +145,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new RectangleObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new RectangleObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
     
@@ -159,7 +159,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new FilledRectangleObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new FilledRectangleObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
 
@@ -173,7 +173,7 @@ namespace SketchEditor
         //}
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new LineObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new LineObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
 
@@ -188,7 +188,7 @@ namespace SketchEditor
         }
 
         public override ISketchObject CreateObject(SketchControl s, Point startingPoint, SolidBrush brush) {
-            return new PenObject(s, startingPoint, new SolidBrush(s.PenColor));
+            return new PenObject(s, startingPoint, new SolidBrush(s.PenColor), s.PenWidth);
         }
     }
     
@@ -212,7 +212,6 @@ namespace SketchEditor
         public void EraseObjectOnLocation(SketchControl s, Point p) {
             ISketchObject clickedObject = s.SketchObjectOnLocation(p);
             if (clickedObject != null) {
-                //Console.WriteLine(clickedObject.Name);
                 s.Sketch.Objects.Remove(clickedObject); // Verwijder object waar met de gum op wordt geklikt
                 s.Invalidate();
             }

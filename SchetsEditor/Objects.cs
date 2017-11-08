@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
 namespace SketchEditor
 {
-    /* Example: public DualPointTool(SketchControl s, Point startingPoint):base(s, startingPoint) { } */
-
-    public interface ISketchObject
+    public interface ISketchObject // Objecten die bij de tools horen
     {
+        string ToString();
         void ChangeEndingPoint(Point p);
         void AddText(String text);
         void Rotate();
@@ -16,12 +14,14 @@ namespace SketchEditor
         void Draw(Graphics g);
         bool IsOnLocation(Point p);
 
-        //Declaratie van get en set methoden
+        // Declaratie van get- en set-methoden
         string Name { get; }
-        string StartingPoint { get; }
-        string EndingPoint { get; }
-        string Brush { get; }
+        Point StartingPoint { get; }
+        Point EndingPoint { get; }
+        SolidBrush Brush { get; }
+        int PenWidth { get; }
         string Text { get; }
+        int Rotation { get; }
     }
 
     public abstract class StartingPointObject : ISketchObject
@@ -29,22 +29,30 @@ namespace SketchEditor
         protected SketchControl s;
         protected Point startingPoint, endingPoint;
         protected SolidBrush brush, finishedBrush, unfinishedBrush;
-        protected String text;
+        protected int penWidth = 0;
+        protected String text = "";
         protected int rotation = 0;
         protected bool finished = false;
 
-        //gebruik get methoden
-        public virtual string Name { get { return this.GetType().ToString().Replace("SketchEditor.", ""); } }
-        public virtual string StartingPoint { get { return startingPoint.X + " " + startingPoint.Y; } }
-        public virtual string EndingPoint { get { return endingPoint.X + " " + endingPoint.Y; } }
-        public virtual string Brush { get { return brush.Color.R + " " + brush.Color.G + " " + brush.Color.B; } }
-        public virtual string Text { get { return text; } }
+        // Declareer Get-methoden
+        public string Name { get { return GetType().ToString().Replace("SketchEditor.", ""); } }
+        public Point StartingPoint { get { return startingPoint; } }
+        public Point EndingPoint { get { return endingPoint; } }
+        public SolidBrush Brush { get { return brush; } }
+        public int PenWidth { get { return penWidth; } }
+        public string Text { get { return text; } }
+        public int Rotation { get { return rotation; } }
 
-        public StartingPointObject(SketchControl s, Point startingPoint, SolidBrush brush) {
+        public override string ToString() {
+            return Name + " " + startingPoint.X + " " + startingPoint.Y + " " + endingPoint.X + " " + endingPoint.Y + " " + brush.Color.R + " " + brush.Color.G + " " + brush.Color.B + " " + penWidth + " " + text + " " + rotation;
+        }
+
+        public StartingPointObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) {
             this.s = s;
             this.startingPoint = startingPoint;
             finishedBrush = brush;
             unfinishedBrush = new SolidBrush(Color.FromArgb(150, brush.Color.R, brush.Color.G, brush.Color.B));
+            this.penWidth = penWidth;
         }
 
         public void ChangeEndingPoint(Point p) {
@@ -57,7 +65,6 @@ namespace SketchEditor
             Graphics testGraphics = Graphics.FromImage(testBitmap);
             SizeF sz = testGraphics.MeasureString(this.text, s.TextFont, startingPoint, StringFormat.GenericTypographic);
             endingPoint = new Point(startingPoint.X + (int)sz.Width, startingPoint.Y + (int)sz.Height);
-            //Console.WriteLine(startingPoint.X + " " + (int)sz.Width + " " + startingPoint.Y + " " + (int)sz.Height);
         }
 
         public void Rotate() {
@@ -74,7 +81,7 @@ namespace SketchEditor
             return rect;
         }
 
-        public virtual void Draw(Graphics g) {
+        public virtual void BaseDraw(Graphics g) {
             if (finished) {
                 brush = finishedBrush;
             } else {
@@ -83,12 +90,16 @@ namespace SketchEditor
             int transformX = 0;
             int transformY = 0;
             if (rotation == 90 || rotation == 180)
-                transformX = s.ClientSize.Width;
+                transformX = s.Sketch.Bitmap.Width;
             if (rotation == 180 || rotation == 270) {
-                transformY = s.ClientSize.Width;
+                transformY = s.Sketch.Bitmap.Width;
             }
             g.TranslateTransform(transformX, transformY);
             g.RotateTransform(rotation);
+        }
+
+        public virtual void Draw(Graphics g) {
+            BaseDraw(g);
         }
 
         public abstract bool IsOnLocation(Point p);
@@ -96,7 +107,7 @@ namespace SketchEditor
 
     public class TextObject : StartingPointObject
     {
-        public TextObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public TextObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
@@ -108,7 +119,6 @@ namespace SketchEditor
         public override bool IsOnLocation(Point p) {
             Rectangle rect = GetRectangle();
             if (!rect.Contains(p)) {
-                //Console.WriteLine("False: [(" + startingPoint.X + ", " + startingPoint.Y + "), (" + endingPoint.X + ", " + endingPoint.Y + ")], (" + p.X + ", " + p.Y + ")");
                 return false;
             }
             Bitmap testBitmap = new Bitmap(rect.Width, rect.Height);
@@ -116,39 +126,38 @@ namespace SketchEditor
             testGraphics.DrawString(text, s.TextFont, Brushes.Red, new Point(0,0), StringFormat.GenericTypographic);
             Draw(testGraphics);
             Color col = testBitmap.GetPixel(p.X - rect.X, p.Y - rect.Y);
-            //Console.WriteLine(col.ToArgb() == Color.Red.ToArgb());
             return col.ToArgb() == Color.Red.ToArgb();
         }
     }
    
     public abstract class DualPointObject : StartingPointObject
     {
-        public DualPointObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public DualPointObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
     }
    
     public class EllipseObject : DualPointObject
     {
-        public EllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public EllipseObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.DrawEllipse(new Pen(brush, 3), GetRectangle());
+            g.DrawEllipse(new Pen(brush, penWidth), GetRectangle());
             g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
             GraphicsPath path = new GraphicsPath();
             path.AddEllipse(GetRectangle());
-            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
+            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, penWidth + 5));
         }
     }
    
     public class FilledEllipseObject : EllipseObject
     {
-        public FilledEllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public FilledEllipseObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
-            base.Draw(g);
+            BaseDraw(g);
             g.FillEllipse(brush, GetRectangle());
             g.ResetTransform();
         }
@@ -162,27 +171,27 @@ namespace SketchEditor
   
     public class RectangleObject : DualPointObject
     {
-        public RectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public RectangleObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.DrawRectangle(new Pen(brush, 3), GetRectangle());
+            g.DrawRectangle(new Pen(brush, penWidth), GetRectangle());
             g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
             GraphicsPath path = new GraphicsPath();
             path.AddRectangle(GetRectangle());
-            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
+            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, penWidth + 5));
         }
     }
    
     public class FilledRectangleObject : RectangleObject
     {
-        public FilledRectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public FilledRectangleObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
-            base.Draw(g);
+            BaseDraw(g);
             g.FillRectangle(brush, GetRectangle());
             g.ResetTransform();
         }
@@ -196,40 +205,41 @@ namespace SketchEditor
    
     public class LineObject : DualPointObject
     {
-        public LineObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public LineObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
-            g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+            g.DrawLine(new Pen(brush, penWidth), startingPoint, endingPoint);
             g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
             GraphicsPath path = new GraphicsPath();
             path.AddLine(startingPoint, endingPoint);
-            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
+            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, penWidth + 5));
         }
     }
    
     public class PenObject : LineObject
     {
-        public PenObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public PenObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
-        public override bool IsOnLocation(Point p) {
-            GraphicsPath path = new GraphicsPath();
-            path.AddLine(startingPoint, endingPoint);
-            return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
+        public override void Draw(Graphics g) {
+            base.BaseDraw(g);
+            g.DrawLine(new Pen(brush, penWidth), startingPoint, endingPoint);
+            g.FillEllipse(brush, startingPoint.X - penWidth / 2, startingPoint.Y - penWidth / 2, penWidth, penWidth);
+            g.ResetTransform();
         }
     }
    
     public class EraserObject : PenObject
     {
-        public EraserObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
+        public EraserObject(SketchControl s, Point startingPoint, SolidBrush brush, int penWidth) :base(s, startingPoint, brush, penWidth) { }
 
         public override void Draw(Graphics g) {
             base.Draw(g);
             brush = Brushes.White as SolidBrush;
-            g.DrawLine(new Pen(brush, 7), startingPoint, endingPoint);
+            g.DrawLine(new Pen(brush, penWidth), startingPoint, endingPoint);
             g.ResetTransform();
         }
     }
