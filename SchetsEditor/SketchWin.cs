@@ -182,7 +182,7 @@ namespace SketchEditor
         public void LoadProject()
         {
             OpenFileDialog d = new OpenFileDialog(); //selecteer file
-            // instellingen dialog
+                                                     // instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Project laden...";
             d.Filter = "Sketch files(*.sketch)| *.sketch";
@@ -196,7 +196,7 @@ namespace SketchEditor
                     try
                     {
                         System.Diagnostics.Debug.WriteLine("start loop");
-                        while ((ObjectName = file.ReadLine()) != null || ObjectName.Length < 4)
+                        while ((ObjectName = file.ReadLine()) != null)
                         {
                             // read variables
                             string[] startPoint = file.ReadLine().Split(' ');
@@ -244,9 +244,12 @@ namespace SketchEditor
                     }
 
                 }
+                this.sketchControl.Invalidate();
                 System.Diagnostics.Debug.WriteLine("end loop");
             }
         }
+            
+        
         public void Store()
         {
             SaveFileDialog d = new SaveFileDialog(); //selecteer file
