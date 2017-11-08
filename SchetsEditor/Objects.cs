@@ -12,6 +12,7 @@ namespace SketchEditor
     {
         void ChangeEndingPoint(Point p);
         void AddText(String text);
+        void Rotate();
         void Finish();
         void Draw(Graphics g);
         bool IsOnLocation(Point p);
@@ -30,7 +31,9 @@ namespace SketchEditor
         protected Point startingPoint, endingPoint;
         protected SolidBrush brush, finishedBrush, unfinishedBrush;
         protected String text;
+        protected int rotation = 0;
         protected bool finished = false;
+
         //gebruik get methoden
         public virtual string Name { get { return this.GetType().ToString().Replace("SketchEditor.", ""); } }
         public virtual string StartingPoint { get { return startingPoint.X + " " + startingPoint.Y; } }
@@ -58,6 +61,11 @@ namespace SketchEditor
             //Console.WriteLine(startingPoint.X + " " + (int)sz.Width + " " + startingPoint.Y + " " + (int)sz.Height);
         }
 
+        public void Rotate() {
+            rotation += 90;
+            rotation %= 360;
+        }
+
         public void Finish() {
             finished = true;
         }
@@ -73,6 +81,15 @@ namespace SketchEditor
             } else {
                 brush = unfinishedBrush;
             }
+            int transformX = 0;
+            int transformY = 0;
+            if (rotation == 90 || rotation == 180)
+                transformX = s.ClientSize.Width;
+            if (rotation == 180 || rotation == 270) {
+                transformY = s.ClientSize.Width;
+            }
+            g.TranslateTransform(transformX, transformY);
+            g.RotateTransform(rotation);
         }
 
         public abstract bool IsOnLocation(Point p);
@@ -86,6 +103,7 @@ namespace SketchEditor
             base.Draw(g);
             g.DrawString(text, s.TextFont, brush, startingPoint, StringFormat.GenericTypographic);
             //g.DrawRectangle(Pens.Gray, GetRectangle()); // Debug
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -116,6 +134,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.DrawEllipse(new Pen(brush, 3), GetRectangle());
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -132,6 +151,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.FillEllipse(brush, GetRectangle());
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -148,6 +168,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.DrawRectangle(new Pen(brush, 3), GetRectangle());
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -164,6 +185,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.FillRectangle(brush, GetRectangle());
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -180,6 +202,7 @@ namespace SketchEditor
         public override void Draw(Graphics g) {
             base.Draw(g);
             g.DrawLine(new Pen(brush, 3), startingPoint, endingPoint);
+            g.ResetTransform();
         }
 
         public override bool IsOnLocation(Point p) {
@@ -208,6 +231,7 @@ namespace SketchEditor
             base.Draw(g);
             brush = Brushes.White as SolidBrush;
             g.DrawLine(new Pen(brush, 7), startingPoint, endingPoint);
+            g.ResetTransform();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SketchEditor
         private Bitmap bitmap;
         private SketchControl s;
 
-        private bool IsketchlistChanged = false;//houdt bij of de list veranderd is
+        private bool IsketchlistChanged = false; // Houdt bij of de list veranderd is
         public event ListChangedEventHandler ListChanged;
         
         public bool listChanged {
@@ -58,7 +58,9 @@ namespace SketchEditor
             objects = new List<ISketchObject>();
         }
         public void Rotate() {
-            // ...
+            for (int i = 0; i < objects.Count; i++) {
+                objects[i].Rotate();
+            }
         }
         public ISketchObject ObjectOnLocation(Point p) {
             ISketchObject result = null;
