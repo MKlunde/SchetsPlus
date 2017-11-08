@@ -13,7 +13,6 @@ namespace SketchEditor
         private SketchControl s;
 
         private bool IsketchlistChanged = false; // Houdt bij of de list veranderd is
-        public event ListChangedEventHandler ListChanged;
         
         public bool listChanged {
             get { return IsketchlistChanged; }

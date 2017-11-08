@@ -26,8 +26,8 @@ namespace SketchEditor
 
         private void ResizeWin(object sender, EventArgs e)
         {
-            sketchControl.Size = new Size (
-                ClientSize.Width  - 70,
+            sketchControl.Size = new Size(
+                ClientSize.Width - 70,
                 ClientSize.Height - 50);
             panel.Location = new Point(64, this.ClientSize.Height - 30);
         }
@@ -53,7 +53,7 @@ namespace SketchEditor
                 }
             }
         }
-        
+
         private void SketchWin_FormClosed(object sender, FormClosedEventArgs e) {
             if (this.sketchControl.Sketch.listChanged)
             {
@@ -102,7 +102,7 @@ namespace SketchEditor
                 mouseDown = false;
             };
             sketchControl.KeyPress += (object sender, KeyPressEventArgs e) => {
-                currentTool.Letter(sketchControl, e.KeyChar); 
+                currentTool.Letter(sketchControl, e.KeyChar);
             };
             Controls.Add(sketchControl);
 
@@ -120,7 +120,7 @@ namespace SketchEditor
         }
 
         private void CreateFileMenu()
-        {   
+        {
             /*ToolStripMenuItem menu = new ToolStripMenuItem("Bestand");
             menu.MergeAction = MergeAction.MatchOnly;
             menu.DropDownItems.Add("Sluiten", null, this.Exit);
@@ -185,50 +185,66 @@ namespace SketchEditor
             // instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Project laden...";
-            d.Filter = "Text files (*.txt)|*.txt";
-            //d.Filter = "Xml files (*.Xml)|*.Xml";
-            //d.Filter = "Binary files (*.Bin)|*.Bin";
+            d.Filter = "Sketch files(*.sketch)| *.sketch";
             if (d.ShowDialog() == DialogResult.OK)
             {
-               // try
-                //{
-                
                 string filename = d.FileName;
                 string ObjectName;
                 this.sketchControl.Sketch.Clear();
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);
                 {
-                    while ((ObjectName = file.ReadLine()) != null)
+                    try
                     {
-                        // read variables
-                        string[] startPoint = file.ReadLine().Split(' ');
-                        string[] endPoint = file.ReadLine().Split(' ');
-                        string[] brush = file.ReadLine().Split(' ');
-                        string text = file.ReadLine();
-                        Color color = Color.FromArgb(int.Parse(brush[0]), int.Parse(brush[1]), int.Parse(brush[2]));
-                        this.sketchControl.PenColor = color;
+                        System.Diagnostics.Debug.WriteLine("start loop");
+                        while ((ObjectName = file.ReadLine()) != null || ObjectName.Length < 4)
+                        {
+                            // read variables
+                            string[] startPoint = file.ReadLine().Split(' ');
+                            string[] endPoint = file.ReadLine().Split(' ');
+                            string[] brush = file.ReadLine().Split(' ');
+                            string text = file.ReadLine();
+                            //string rotation = file.ReadLine();
+                            Color col = Color.FromArgb(int.Parse(brush[0]), int.Parse(brush[1]), int.Parse(brush[2]));
+                            Point p1 = new Point(int.Parse(startPoint[0]), int.Parse(startPoint[1]));
+                            Point p2 = new Point(int.Parse(endPoint[0]), int.Parse(endPoint[1]));
+                            var s = this.sketchControl;
 
-                        
-                        //ObjectName.MouseDown;
+                            ISketchObject obj;
+                            switch (ObjectName)//creër object naar soort
+                            {
+                                case ("FilledEllipseObject"):
+                                    obj = new FilledEllipseObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                case ("EllipseObject"):
+                                    obj = new EllipseObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                case ("RectangleObject"):
+                                    obj = new RectangleObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                case ("FilledRectangleObject"):
+                                    obj = new FilledRectangleObject(s, p1, new SolidBrush(col));
+                                    break;
+
+                                default:
+                                    obj = new RectangleObject(s, p1, new SolidBrush(col));
+                                    break;
+                            }
+                            s.SketchAddObject(obj); // Voeg object toe aan object list
+                            obj.ChangeEndingPoint(p2); // Zet endingPoint goed
+                            obj.Finish(); // Zet finished op true (de gebruiker is het object immers niet meer aan het tekenen)
+                        }
                     }
-                }
-                /*
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-                this.sketchControl.Sketch.Objects = formatter.Deserialize(stream);
-                //this.sketchControl.Sketch.Objects = (List<ISketchObject>)formatter.Deserialize(stream);
-                stream.Close();
 
-                System.Diagnostics.Debug.WriteLine("Filename= " + filename);
-                XmlSerializer reader = new XmlSerializer(typeof(List<ISketchObject>));
-                StreamReader file = new StreamReader(filename);
-                this.sketchControl.Sketch.Objects = (List<ISketchObject>)reader.Deserialize(file);
-                file.Close();*/
-                // }
-                //catch (Exception ex)
-                //{
-                //System.Diagnostics.Debug.WriteLine("test load failed");
-                //}
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e);
+                    }
+
+                }
+                System.Diagnostics.Debug.WriteLine("end loop");
             }
         }
         public void Store()
@@ -237,13 +253,9 @@ namespace SketchEditor
             // instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Opslaan als project...";
-            d.Filter = "Text files (*.txt)|*.txt";
-            //d.Filter = "Xml files (*.Xml)|*.Xml";
-            //d.Filter = "Binary files (*.Bin)|*.Bin";
+            d.Filter = "Sketch files (*.sketch)|*.sketch";
             if (d.ShowDialog() == DialogResult.OK)
             {
-                //try
-                //{
                 string filename = d.FileName;
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename))
                 {
@@ -254,40 +266,11 @@ namespace SketchEditor
                         file.WriteLine(obj.EndingPoint);
                         file.WriteLine(obj.Brush);
                         file.WriteLine(obj.Text);
+                        //file.WriteLine(obj.rotation);
                     }
                 }
                 this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
-                /*
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
-                formatter.Serialize(stream, typeof(List<ISketchObject>));
-                stream.Close();
-                
-                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
-                    XmlSerializer ser = new XmlSerializer(typeof(List<ISketchObject>));
-                    TextWriter writer = new StreamWriter(filename);
-                    var b = this.sketchControl.Sketch.Objects;
-                    ser.Serialize(writer, b);
-                    writer.Close();*/
-                //}
-                //catch (Exception ex)
-                //{
-                //System.Diagnostics.Debug.WriteLine("test store failed");
-                //}
             }
-            /*
-            using (StreamWriter sw = File.CreateText(filename))
-            {//Open een writer naar gekozen bestand
-                //File.WriteAllText(filename, String.Empty);// maak het bestand leeg
-                foreach (var obj in this.sketchControl.Sketch.Objects) //Selecteer elk object
-                {
-
-                    sw.WriteLine(obj); //Schrijf het object naar een bestand
-                    sw.WriteLine(obj.Name); //Schrijf het object naar een bestand
-
-                }
-                sw.Close();
-            }*/
         }
 
         public void StoreImage()

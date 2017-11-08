@@ -15,7 +15,6 @@ namespace SketchEditor
 
         public Color PenColor {
             get { return penColor; }
-            set { PenColor = value; }
         }
         public Sketch Sketch {
             get { return sketch; }
