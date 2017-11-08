@@ -8,10 +8,11 @@ namespace SketchEditor
 {
     public class SketchControl : UserControl
     {
-        private Sketch sketch;
-        private Color penColor;
-        private ISketchObject currentObject;
-        private Font textFont = new Font("Tahoma", 40);
+        SketchWin sketchWin;
+        Sketch sketch;
+        Color penColor;
+        ISketchObject currentObject;
+        Font textFont = new Font("Tahoma", 40);
 
         public Color PenColor {
             get { return penColor; }
@@ -26,7 +27,8 @@ namespace SketchEditor
             get { return textFont; }
         }
 
-        public SketchControl() {
+        public SketchControl(SketchWin sketchWin) {
+            this.sketchWin = sketchWin;
             BorderStyle = BorderStyle.Fixed3D;
             sketch = new Sketch(this);
             Paint += DrawSketch;
@@ -59,13 +61,14 @@ namespace SketchEditor
         public void ChangeColor(object obj, EventArgs ea) {
             string colorName = ((ComboBox)obj).Text;
             penColor = Color.FromName(colorName);
+            sketchWin.ChangeColorButtonColor(penColor);
         }
         public void ChangeColorViaMenu(object obj, EventArgs ea) {
             string colorName = ((ToolStripMenuItem)obj).Text;
             penColor = Color.FromName(colorName);
+            sketchWin.ChangeColorButtonColor(penColor);
         }
 
-        /* Toegevoegd */
         public void SketchAddObject(ISketchObject obj) {
             sketch.AddObject(obj);
             currentObject = obj;

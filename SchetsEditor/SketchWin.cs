@@ -16,10 +16,18 @@ namespace SketchEditor
         ISketchTool currentTool;
         Panel panel;
         bool mouseDown;
+
+        Button clearButton, rotateButton, colorButton;
+        Label colorLabel;
+
         ResourceManager resourceManager = new ResourceManager(
                 "SchetsEditor.Properties.Resources",
                 Assembly.GetExecutingAssembly()
         );
+
+        public SketchControl SketchControl {
+            get { return sketchControl;  }
+        }
 
         private void ResizeWin(object sender, EventArgs e)
         {
@@ -41,25 +49,21 @@ namespace SketchEditor
 
         public void Exit(object obj, EventArgs e)
         {
-            if (this.sketchControl.Sketch.listChanged)
-            {
-                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil afsluiten?", "Alert", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    Close();
-                }
-            }
+            Close();
         }
 
-        private void SketchWin_FormClosed(object sender, FormClosedEventArgs e) {
-            if (this.sketchControl.Sketch.listChanged)
-            {
-                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil afsluiten?", "Alert", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    parentWindow.SketchWinMenuItems(true);
+        private void SketchWin_FormClosing(object sender, FormClosingEventArgs e) {
+            if (sketchControl.Sketch.listChanged) {
+                DialogResult dialogResult = MessageBox.Show("Er zijn niet-opgeslagen wijzigingen. Wil je deze opslaan?", "Niet-opgeslagen wijzigingen", MessageBoxButtons.YesNoCancel);
+                if (dialogResult == DialogResult.Yes) {
+                    e.Cancel = true;
+                    SaveProject();
+                }
+                if (dialogResult == DialogResult.Cancel) {
+                    e.Cancel = true;
                 }
             }
+            parentWindow.SketchWinMenuItems(true);
         }
 
         public SketchWin(MainWindow parentWindow)
@@ -83,7 +87,7 @@ namespace SketchEditor
             ClientSize = new Size(700, 500);
             currentTool = theTools[0];
 
-            sketchControl = new SketchControl();
+            sketchControl = new SketchControl(this);
             sketchControl.Location = new Point(64, 10);
             sketchControl.MouseDown += (object sender, MouseEventArgs e) => {
                 mouseDown = true;
@@ -106,29 +110,19 @@ namespace SketchEditor
             menuStrip = new MenuStrip();
             menuStrip.Visible = false;
             Controls.Add(menuStrip);
-            CreateFileMenu();
             CreateToolMenu(theTools);
             CreateActionMenu(theColors);
             CreateToolButtons(theTools);
             CreateActionButtons(theColors);
             Resize += ResizeWin;
             ResizeWin(null, null);
-            FormClosed += SketchWin_FormClosed;
-        }
-
-        private void CreateFileMenu()
-        {
-            /*ToolStripMenuItem menu = new ToolStripMenuItem("Bestand");
-            menu.MergeAction = MergeAction.MatchOnly;
-            menu.DropDownItems.Add("Sluiten", null, this.Exit);
-            menuStrip.Items.Add(menu);*/
+            FormClosing += SketchWin_FormClosing;
         }
 
         private void CreateToolMenu(ICollection<ISketchTool> tools)
         {
             if (parentWindow.MdiChildren.Length == 0) {
                 foreach (ISketchTool tool in tools) {
-                    Console.WriteLine(parentWindow.MdiChildren.Length);
                     ToolStripItem item = new ToolStripMenuItem();
                     item.Tag = tool;
                     item.Text = tool.ToString();
@@ -162,6 +156,7 @@ namespace SketchEditor
                 b.Font = new Font("Tahoma", 8);
                 b.FlatAppearance.BorderSize = 0;
                 b.FlatAppearance.CheckedBackColor = Color.FromArgb(255, 200, 200, 200);
+                b.Cursor = Cursors.Hand;
                 b.Size = new Size(45, 60);
                 b.Location = new Point(10, 10 + t * 60);
                 b.Tag = tool;
@@ -175,132 +170,67 @@ namespace SketchEditor
                 t++;
             }
         }
+        private void CreateActionButtons(String[] kleuren) {
+            panel = new Panel();
+            panel.Size = new Size(600, 24);
+            Controls.Add(panel);
 
-        public void LoadProject()
-        {
-            if (this.sketchControl.Sketch.listChanged)
-            {
-                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil doorgaan?", "Alert", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-            }
-            OpenFileDialog d = new OpenFileDialog(); //selecteer file
-                                                     // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Project laden...";
-            d.Filter = "Sketch files(*.sketch)| *.sketch";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                string filename = d.FileName;
-                string ObjectName;
-                this.sketchControl.Sketch.Clear();
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
-                {
-                    try
-                    {
-                        System.Diagnostics.Debug.WriteLine("start loop");
-                        while ((ObjectName = file.ReadLine()) != null)
-                        {
-                            // read variables
-                            string[] startPoint = file.ReadLine().Split(' ');
-                            string[] endPoint = file.ReadLine().Split(' ');
-                            string[] brush = file.ReadLine().Split(' ');
-                            string text = file.ReadLine();
-                            //string rotation = file.ReadLine();
-                            Color col = Color.FromArgb(int.Parse(brush[0]), int.Parse(brush[1]), int.Parse(brush[2]));
-                            Point p1 = new Point(int.Parse(startPoint[0]), int.Parse(startPoint[1]));
-                            Point p2 = new Point(int.Parse(endPoint[0]), int.Parse(endPoint[1]));
-                            var s = this.sketchControl;
+            clearButton = new Button();
+            rotateButton = new Button();
+            colorButton = new Button();
+            colorLabel = new Label();
 
-                            ISketchObject obj;
-                            switch (ObjectName)//creër object naar soort
-                            {
-                                case ("FilledEllipseObject"):
-                                    obj = new FilledEllipseObject(s, p1, new SolidBrush(col));
-                                    break;
+            clearButton.FlatStyle = rotateButton.FlatStyle = colorButton.FlatStyle = FlatStyle.Flat;
+            clearButton.Cursor = rotateButton.Cursor = colorButton.Cursor = Cursors.Hand;
 
-                                case ("EllipseObject"):
-                                    obj = new EllipseObject(s, p1, new SolidBrush(col));
-                                    break;
+            clearButton.Text = "Clear";
+            clearButton.Location = new Point(0, 0);
+            clearButton.Click += sketchControl.ClearSketch;
+            panel.Controls.Add(clearButton);
 
-                                case ("RectangleObject"):
-                                    obj = new RectangleObject(s, p1, new SolidBrush(col));
-                                    break;
+            rotateButton.Text = "Rotate";
+            rotateButton.Location = new Point(80, 0);
+            rotateButton.Click += sketchControl.RotateSketch;
+            panel.Controls.Add(rotateButton);
 
-                                case ("FilledRectangleObject"):
-                                    obj = new FilledRectangleObject(s, p1, new SolidBrush(col));
-                                    break;
+            colorLabel.Text = "Penkleur:";
+            colorLabel.Location = new Point(180, 3);
+            colorLabel.AutoSize = true;
+            panel.Controls.Add(colorLabel);
 
-                                case ("LineObject"):
-                                    obj = new LineObject(s, p1, new SolidBrush(col));
-                                    break;
+            colorButton.Width = 50;
+            colorButton.BackColor = sketchControl.PenColor;
+            colorButton.Location = new Point(240, 0);
+            colorButton.Click += ColorButton_click;
+            panel.Controls.Add(colorButton);
 
-                                case ("PenObject"):
-                                    obj = new PenObject(s, p1, new SolidBrush(col));
-                                    break;
+            ComboBox cbb = new ComboBox();
+            cbb.Location = new Point(400, 0);
+            cbb.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbb.SelectedValueChanged += sketchControl.ChangeColor;
+            foreach (string k in kleuren)
+                cbb.Items.Add(k);
+            cbb.SelectedIndex = 0;
+            panel.Controls.Add(cbb);
+        }
 
-                                case ("TextObject"):
-                                    obj = new TextObject(s, p1, new SolidBrush(col));
-                                    obj.AddText(text);
-                                    break;
+        public void ChangeColorButtonColor(Color col) {
+            colorButton.BackColor = col;
+        }
 
-                                default:
-                                    obj = new RectangleObject(s, p1, new SolidBrush(col));
-                                    break;
-                            }
-                            s.SketchAddObject(obj); // Voeg object toe aan object list
-                            obj.ChangeEndingPoint(p2); // Zet endingPoint goed
-                            obj.Finish(); // Zet finished op true (de gebruiker is het object immers niet meer aan het tekenen)
-                        }
-                    }
+        void ColorButton_click(object sender, EventArgs e) {
+            ColorDialog colorDialog = new ColorDialog();
+            colorDialog.Color = sketchControl.PenColor;
+            DialogResult result = colorDialog.ShowDialog();
+            if (result == DialogResult.OK) {
+                // Change penColor...
 
-                    catch (Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e);
-                    }
 
-                }
-                file.Close();
-                this.sketchControl.Invalidate();
-                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
-                
+                colorButton.BackColor = colorDialog.Color;
             }
         }
 
-        public void StoreImage()
-        {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Opslaan als afbeelding...";
-            d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                string fileName = d.FileName;
-                Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
-                switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
-                {
-                    case (".Png"):
-                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
-                        break;
-                    case (".jpg"):
-                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        break;
-                    case (".Bmp"):
-                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
-                        break;
-                    default:
-                        fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
-                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        break;
-                }
-            }
-            this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
-        }
-    
-        public void Store()
+        public void SaveProject()
         {
             SaveFileDialog d = new SaveFileDialog(); //selecteer file
             // instellingen dialog
@@ -326,7 +256,7 @@ namespace SketchEditor
             }
         }
 
-        public void LoadImage()
+        public void ExportImage()
         {
             if (this.sketchControl.Sketch.listChanged)
             {
@@ -336,55 +266,34 @@ namespace SketchEditor
                     return;
                 }
             }
-            OpenFileDialog d = new OpenFileDialog(); //selecteer file
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
             // instellingen dialog
             d.InitialDirectory = "./";
-            d.Title = "Laad afbeelding...";
+            d.Title = "Exporteer afbeelding...";
             d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
             if (d.ShowDialog() == DialogResult.OK)
             {
+
                 string fileName = d.FileName;
-                Image i = Image.FromFile(fileName);
-                this.sketchControl.Sketch.ImageLoad = i;
+                Bitmap img = sketchControl.Sketch.Bitmap;//Get bitmap
+                switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
+                {
+                    case (".Png"):
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
+                        break;
+                    case (".jpg"):
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                    case (".Bmp"):
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                        break;
+                    default:
+                        fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                }
                 this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
-                this.sketchControl.Sketch.Clear();
-                this.sketchControl.Invalidate();
-                //fileName.Close();
             }
         }     
-
-        private void CreateActionButtons(String[] kleuren)
-        {   
-            panel = new Panel();
-            panel.Size = new Size(600, 24);
-            Controls.Add(panel);
-            
-            Button b; Label l; ComboBox cbb;
-            b = new Button(); 
-            b.Text = "Clear";  
-            b.Location = new Point(  0, 0); 
-            b.Click += sketchControl.ClearSketch; 
-            panel.Controls.Add(b);
-            
-            b = new Button(); 
-            b.Text = "Rotate"; 
-            b.Location = new Point( 80, 0); 
-            b.Click += sketchControl.RotateSketch; 
-            panel.Controls.Add(b);
-            
-            l = new Label();  
-            l.Text = "Penkleur:"; 
-            l.Location = new Point(180, 3); 
-            l.AutoSize = true;               
-            panel.Controls.Add(l);
-            
-            cbb = new ComboBox(); cbb.Location = new Point(240, 0); 
-            cbb.DropDownStyle = ComboBoxStyle.DropDownList; 
-            cbb.SelectedValueChanged += sketchControl.ChangeColor;
-            foreach (string k in kleuren)
-                cbb.Items.Add(k);
-            cbb.SelectedIndex = 0;
-            panel.Controls.Add(cbb);
-        }
     }
 }
