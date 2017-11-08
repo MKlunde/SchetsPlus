@@ -116,6 +116,8 @@ namespace SketchEditor
             Resize += ResizeWin;
             ResizeWin(null, null);
             FormClosing += SketchWin_FormClosing;
+
+            sketchControl.ChangeColor(Color.Black);
         }
 
         private void CreateToolMenu(ICollection<ISketchTool> tools)
@@ -192,29 +194,35 @@ namespace SketchEditor
             rotateButton.Click += sketchControl.RotateSketch;
             panel.Controls.Add(rotateButton);
 
-            colorLabel.Text = "Penkleur:";
+            colorButton.Text = "Penkleur";
+            ChangeColorButtonColor(sketchControl.PenColor);
+            colorButton.FlatAppearance.BorderColor = Color.Black;
+            colorButton.Location = new Point(180, 0);
+            colorButton.Click += ColorButton_click;
+            panel.Controls.Add(colorButton);
+
+            /*/*colorLabel.Text = "Penkleur:";
             colorLabel.Location = new Point(180, 3);
             colorLabel.AutoSize = true;
             panel.Controls.Add(colorLabel);
 
-            colorButton.Width = 50;
-            colorButton.BackColor = sketchControl.PenColor;
-            colorButton.Location = new Point(240, 0);
-            colorButton.Click += ColorButton_click;
-            panel.Controls.Add(colorButton);
-
             ComboBox cbb = new ComboBox();
-            cbb.Location = new Point(400, 0);
+            cbb.Location = new Point(240, 0);
             cbb.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbb.SelectedValueChanged += sketchControl.ChangeColor;
+            cbb.SelectedValueChanged += sketchControl.ChangeColorFromComboBox;
             foreach (string k in kleuren)
                 cbb.Items.Add(k);
             cbb.SelectedIndex = 0;
-            panel.Controls.Add(cbb);
+            panel.Controls.Add(cbb);*/
         }
 
         public void ChangeColorButtonColor(Color col) {
             colorButton.BackColor = col;
+            Console.WriteLine(sketchControl.PenColor.GetBrightness());
+            if(sketchControl.PenColor.GetBrightness() > 0.4)
+                colorButton.ForeColor = Color.Black;
+            else
+                colorButton.ForeColor = Color.White;
         }
 
         void ColorButton_click(object sender, EventArgs e) {
@@ -222,10 +230,7 @@ namespace SketchEditor
             colorDialog.Color = sketchControl.PenColor;
             DialogResult result = colorDialog.ShowDialog();
             if (result == DialogResult.OK) {
-                // Change penColor...
-
-
-                colorButton.BackColor = colorDialog.Color;
+                sketchControl.ChangeColor(colorDialog.Color);
             }
         }
 
@@ -253,22 +258,22 @@ namespace SketchEditor
                         //file.WriteLine(obj.rotation);
                     }
                 }
-                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+                sketchControl.Sketch.listChanged = false; // Geef aan dat er geen nieuwe wijzigingen zijn aan de sketch
             }
         }
 
         public void ExportImage()
         {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
+            SaveFileDialog d = new SaveFileDialog(); // Selecteer file
+            // Instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Opslaan als afbeelding...";
             d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
             if (d.ShowDialog() == DialogResult.OK)
             {
                 string fileName = d.FileName;
-                Bitmap img = sketchControl.Sketch.Bitmap;//Get bitmap
-                switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
+                Bitmap img = sketchControl.Sketch.Bitmap; // Get bitmap
+                switch (System.IO.Path.GetExtension(fileName)) // Save op basis van extensie
                 {
                     case (".Png"):
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
@@ -280,12 +285,11 @@ namespace SketchEditor
                         img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
                         break;
                     default:
-                        fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
-                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        fileName = fileName + ".png"; // Geef een extensie aan nieuwe files
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
                         break;
                 }
             }
-            this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
         }     
     }
 }

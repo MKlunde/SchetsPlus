@@ -58,15 +58,15 @@ namespace SketchEditor
             sketch.Rotate();
             Invalidate();
         }
-        public void ChangeColor(object obj, EventArgs ea) {
-            string colorName = ((ComboBox)obj).Text;
-            penColor = Color.FromName(colorName);
-            sketchWin.ChangeColorButtonColor(penColor);
+        public void ChangeColor(Color col) {
+            penColor = col;
+            sketchWin.ChangeColorButtonColor(col);
+        }
+        public void ChangeColorFromComboBox(object obj, EventArgs ea) {
+            ChangeColor(Color.FromName(((ComboBox)obj).Text));
         }
         public void ChangeColorViaMenu(object obj, EventArgs ea) {
-            string colorName = ((ToolStripMenuItem)obj).Text;
-            penColor = Color.FromName(colorName);
-            sketchWin.ChangeColorButtonColor(penColor);
+            ChangeColor(Color.FromName(((ToolStripMenuItem)obj).Text));
         }
 
         public void SketchAddObject(ISketchObject obj) {
