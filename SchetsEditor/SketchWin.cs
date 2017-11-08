@@ -44,11 +44,25 @@ namespace SketchEditor
 
         public void Exit(object obj, EventArgs e)
         {
-            Close();
+            if (this.sketchControl.Sketch.listChanged)
+            {
+                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil afsluiten?", "Alert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    Close();
+                }
+            }
         }
         
         private void SketchWin_FormClosed(object sender, FormClosedEventArgs e) {
-            parentWindow.SketchWinMenuItems(true);
+            if (this.sketchControl.Sketch.listChanged)
+            {
+                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil afsluiten?", "Alert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    parentWindow.SketchWinMenuItems(true);
+                }
+            }
         }
 
         public SketchWin(MainWindow parentWindow)
@@ -233,6 +247,7 @@ namespace SketchEditor
                         file.WriteLine(obj.Text);
                     }
                 }
+                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
                 /*
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -294,6 +309,7 @@ namespace SketchEditor
                         break;
                 }
             }
+            this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
         }     
 
         private void CreateActionButtons(String[] kleuren)

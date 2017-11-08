@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace SketchEditor
 {
@@ -11,14 +12,17 @@ namespace SketchEditor
         private Bitmap bitmap;
         private SketchControl s;
 
+        private bool IsketchlistChanged = false;//houdt bij of de list veranderd is
+        public event ListChangedEventHandler ListChanged;
+        
+        public bool listChanged {
+            get { return IsketchlistChanged; }
+            set { IsketchlistChanged = value; }
+        }
+
         public List<ISketchObject> Objects {
             get { return objects; }
             set { objects = value; }
-        }
-        //Toegevoegd maakt huidige lijst leeg
-        public void ClearList()
-        {
-            objects.Clear();
         }
         public Bitmap Bitmap{
             get {return bitmap; }
