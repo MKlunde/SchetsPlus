@@ -129,24 +129,29 @@ namespace SketchEditor
 
         private void CreateToolMenu(ICollection<ISketchTool> tools)
         {
-            foreach (ISketchTool tool in tools)
-            {   ToolStripItem item = new ToolStripMenuItem();
-                item.Tag = tool;
-                item.Text = tool.ToString();
-                item.Image = (Image)resourceManager.GetObject(tool.ToString());
-                item.Click += ToolMenu_click;
-                parentWindow.toolMenu.DropDownItems.Add(item);
+            if (parentWindow.MdiChildren.Length == 0) {
+                foreach (ISketchTool tool in tools) {
+                    Console.WriteLine(parentWindow.MdiChildren.Length);
+                    ToolStripItem item = new ToolStripMenuItem();
+                    item.Tag = tool;
+                    item.Text = tool.ToString();
+                    item.Image = (Image)resourceManager.GetObject(tool.ToString());
+                    item.Click += ToolMenu_click;
+                    parentWindow.toolMenu.DropDownItems.Add(item);
+                }
             }
         }
 
         private void CreateActionMenu(String[] kleuren)
         {
-            parentWindow.actionMenu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch );
-            parentWindow.actionMenu.DropDownItems.Add("Roteer", null, sketchControl.RotateSketch );
-            ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
-            foreach (string k in kleuren)
-                submenu.DropDownItems.Add(k, null, sketchControl.ChangeColorViaMenu);
-            parentWindow.actionMenu.DropDownItems.Add(submenu);
+            if (parentWindow.MdiChildren.Length == 0) {
+                parentWindow.actionMenu.DropDownItems.Add("Clear", null, sketchControl.ClearSketch);
+                parentWindow.actionMenu.DropDownItems.Add("Roteer", null, sketchControl.RotateSketch);
+                ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
+                foreach (string k in kleuren)
+                    submenu.DropDownItems.Add(k, null, sketchControl.ChangeColorViaMenu);
+                parentWindow.actionMenu.DropDownItems.Add(submenu);
+            }
         }
 
         private void CreateToolButtons(ICollection<ISketchTool> tools)
