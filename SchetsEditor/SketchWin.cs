@@ -5,8 +5,9 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
 using System.IO;
-using System.Drawing.Imaging;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SketchEditor
 {
@@ -162,21 +163,30 @@ namespace SketchEditor
             d.InitialDirectory = "./";
             d.Title = "Project laden...";
             d.Filter = "Xml files (*.Xml)|*.Xml";
+            //d.Filter = "Binary files (*.Bin)|*.Bin";
             if (d.ShowDialog() == DialogResult.OK)
             {
-                try
-                {
+               // try
+                //{
+                
                     string filename = d.FileName;
+                    /*
+                    IFormatter formatter = new BinaryFormatter();
+                    Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    this.sketchControl.Sketch.Objects = formatter.Deserialize(stream);
+                    //this.sketchControl.Sketch.Objects = (List<ISketchObject>)formatter.Deserialize(stream);
+                    stream.Close();
+                    */
                     System.Diagnostics.Debug.WriteLine("Filename= " + filename);
                     XmlSerializer reader = new XmlSerializer(typeof(List<ISketchObject>));
                     StreamReader file = new StreamReader(filename);
                     this.sketchControl.Sketch.Objects = (List<ISketchObject>)reader.Deserialize(file);
                     file.Close();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("test load failed");
-                }
+               // }
+                //catch (Exception ex)
+                //{
+                    //System.Diagnostics.Debug.WriteLine("test load failed");
+                //}
             }
         }
         public void Store()
@@ -186,22 +196,29 @@ namespace SketchEditor
             d.InitialDirectory = "./";
             d.Title = "Opslaan als project...";
             d.Filter = "Xml files (*.Xml)|*.Xml";
+            //d.Filter = "Binary files (*.Bin)|*.Bin";
             if (d.ShowDialog() == DialogResult.OK)
             {
-                try
-                {
-                    string filename = d.FileName;
+                //try
+                //{
+                string filename = d.FileName;
+                /*
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
+                formatter.Serialize(stream, typeof(List<ISketchObject>));
+                stream.Close();
+                */
                     System.Diagnostics.Debug.WriteLine("Filename= " + filename);
                     XmlSerializer ser = new XmlSerializer(typeof(List<ISketchObject>));
                     TextWriter writer = new StreamWriter(filename);
                     var b = this.sketchControl.Sketch.Objects;
                     ser.Serialize(writer, b);
                     writer.Close();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("test store failed");
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //System.Diagnostics.Debug.WriteLine("test store failed");
+                //}
             }
             /*
             using (StreamWriter sw = File.CreateText(filename))
@@ -229,30 +246,24 @@ namespace SketchEditor
             {
                 try
                 {
-                    string fileName = d.FileName;
-                    File.Create(fileName);//Maak een nieuwe file aan  
+                    string fileName = d.FileName; 
                     Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
-                    //var format = System.Drawing.Imaging.ImageFormat.Jpeg;//default
-                    /*switch (System.IO.Path.GetExtension(fileName))
+                    switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
                      {
-                    case (".png"):
-                    format = System.Drawing.Imaging.ImageFormat.Png;
-                        break;
-                   case (".jpg"):
-                        format = System.Drawing.Imaging.ImageFormat.Jpeg;
-                   break;
-                   case (".Bmp"):
-                   format = System.Drawing.Imaging.ImageFormat.Bmp;
-                    break;
-                   default:
-                   fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
-                   System.Diagnostics.Debug.WriteLine("default called");
-                    break;
-                   }   */
-                    if (!System.IO.Path.HasExtension(fileName) || System.IO.Path.GetExtension(fileName) != "jpg") 
-                        fileName = fileName + ".jpg";
-                    img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    img.Dispose();
+                    case (".Png"):
+                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
+                            break;
+                    case (".jpg"):
+                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            break;
+                    case (".Bmp"):
+                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                            break;
+                    default:
+                            fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
+                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            break;
+                   }                   
                 }
                 catch (Exception ex)
                 {

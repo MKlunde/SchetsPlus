@@ -2,11 +2,13 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace SketchEditor
 {
     /* Example: public DualPointTool(SketchControl s, Point startingPoint):base(s, startingPoint) { } */
-
+    //[Serializable]
+    //[XmlIgnore]
     public interface ISketchObject
     {
         void ChangeEndingPoint(Point p);
@@ -18,7 +20,7 @@ namespace SketchEditor
         //Declaratie van get en set methoden
         string Name { get; }
     }
-
+    [Serializable]
     public abstract class StartingPointObject : ISketchObject
     {
         protected SketchControl s;
@@ -68,7 +70,7 @@ namespace SketchEditor
 
         public abstract bool IsOnLocation(Point p);
     }
-
+    [Serializable]
     public class TextObject : StartingPointObject
     {
         public TextObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -94,12 +96,12 @@ namespace SketchEditor
             return col.ToArgb() == Color.Red.ToArgb();
         }
     }
-
+    [Serializable]
     public abstract class DualPointObject : StartingPointObject
     {
         public DualPointObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
     }
-
+    [Serializable]
     public class EllipseObject : DualPointObject
     {
         public EllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -115,6 +117,7 @@ namespace SketchEditor
             return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
         }
     }
+    [Serializable]
     public class FilledEllipseObject : EllipseObject
     {
         public FilledEllipseObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -130,7 +133,7 @@ namespace SketchEditor
             return finished && path.IsVisible(p);
         }
     }
-
+    [Serializable]
     public class RectangleObject : DualPointObject
     {
         public RectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -146,6 +149,7 @@ namespace SketchEditor
             return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
         }
     }
+    [Serializable]
     public class FilledRectangleObject : RectangleObject
     {
         public FilledRectangleObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -161,7 +165,7 @@ namespace SketchEditor
             return finished && path.IsVisible(p);
         }
     }
-
+    [Serializable]
     public class LineObject : DualPointObject
     {
         public LineObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -177,7 +181,7 @@ namespace SketchEditor
             return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
         }
     }
-
+    [Serializable]
     public class PenObject : LineObject
     {
         public PenObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
@@ -188,7 +192,7 @@ namespace SketchEditor
             return finished && path.IsOutlineVisible(p, new Pen(Brushes.Black, 7));
         }
     }
-
+    [Serializable]
     public class EraserObject : PenObject
     {
         public EraserObject(SketchControl s, Point startingPoint, SolidBrush brush) :base(s, startingPoint, brush) { }
