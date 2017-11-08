@@ -15,6 +15,11 @@ namespace SketchEditor
             get { return objects; }
             set { objects = value; }
         }
+        //Toegevoegd maakt huidige lijst leeg
+        public void ClearList()
+        {
+            objects.Clear();
+        }
         public Bitmap Bitmap{
             get {return bitmap; }
         }

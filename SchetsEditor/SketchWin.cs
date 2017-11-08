@@ -162,30 +162,49 @@ namespace SketchEditor
             // instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Project laden...";
-            d.Filter = "Xml files (*.Xml)|*.Xml";
+            d.Filter = "Text files (*.txt)|*.txt";
+            //d.Filter = "Xml files (*.Xml)|*.Xml";
             //d.Filter = "Binary files (*.Bin)|*.Bin";
             if (d.ShowDialog() == DialogResult.OK)
             {
                // try
                 //{
                 
-                    string filename = d.FileName;
-                    /*
-                    IFormatter formatter = new BinaryFormatter();
-                    Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    this.sketchControl.Sketch.Objects = formatter.Deserialize(stream);
-                    //this.sketchControl.Sketch.Objects = (List<ISketchObject>)formatter.Deserialize(stream);
-                    stream.Close();
-                    */
-                    System.Diagnostics.Debug.WriteLine("Filename= " + filename);
-                    XmlSerializer reader = new XmlSerializer(typeof(List<ISketchObject>));
-                    StreamReader file = new StreamReader(filename);
-                    this.sketchControl.Sketch.Objects = (List<ISketchObject>)reader.Deserialize(file);
-                    file.Close();
-               // }
+                string filename = d.FileName;
+                string ObjectName;
+                this.sketchControl.Sketch.Clear();
+                System.IO.StreamReader file = new System.IO.StreamReader(filename);
+                {
+                    while ((ObjectName = file.ReadLine()) != null)
+                    {
+                        // read variables
+                        string[] startPoint = file.ReadLine().Split(' ');
+                        string[] endPoint = file.ReadLine().Split(' ');
+                        string[] brush = file.ReadLine().Split(' ');
+                        string text = file.ReadLine();
+                        Color color = Color.FromArgb(int.Parse(brush[0]), int.Parse(brush[1]), int.Parse(brush[2]));
+                        this.sketchControl.PenColor = color;
+
+                        
+                        //ObjectName.MouseDown;
+                    }
+                }
+                /*
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+                this.sketchControl.Sketch.Objects = formatter.Deserialize(stream);
+                //this.sketchControl.Sketch.Objects = (List<ISketchObject>)formatter.Deserialize(stream);
+                stream.Close();
+
+                System.Diagnostics.Debug.WriteLine("Filename= " + filename);
+                XmlSerializer reader = new XmlSerializer(typeof(List<ISketchObject>));
+                StreamReader file = new StreamReader(filename);
+                this.sketchControl.Sketch.Objects = (List<ISketchObject>)reader.Deserialize(file);
+                file.Close();*/
+                // }
                 //catch (Exception ex)
                 //{
-                    //System.Diagnostics.Debug.WriteLine("test load failed");
+                //System.Diagnostics.Debug.WriteLine("test load failed");
                 //}
             }
         }
@@ -195,25 +214,37 @@ namespace SketchEditor
             // instellingen dialog
             d.InitialDirectory = "./";
             d.Title = "Opslaan als project...";
-            d.Filter = "Xml files (*.Xml)|*.Xml";
+            d.Filter = "Text files (*.txt)|*.txt";
+            //d.Filter = "Xml files (*.Xml)|*.Xml";
             //d.Filter = "Binary files (*.Bin)|*.Bin";
             if (d.ShowDialog() == DialogResult.OK)
             {
                 //try
                 //{
                 string filename = d.FileName;
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename))
+                {
+                    foreach(ISketchObject obj in this.sketchControl.Sketch.Objects)
+                    {
+                        file.WriteLine(obj.Name);
+                        file.WriteLine(obj.StartingPoint);
+                        file.WriteLine(obj.EndingPoint);
+                        file.WriteLine(obj.Brush);
+                        file.WriteLine(obj.Text);
+                    }
+                }
                 /*
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
                 formatter.Serialize(stream, typeof(List<ISketchObject>));
                 stream.Close();
-                */
+                
                     System.Diagnostics.Debug.WriteLine("Filename= " + filename);
                     XmlSerializer ser = new XmlSerializer(typeof(List<ISketchObject>));
                     TextWriter writer = new StreamWriter(filename);
                     var b = this.sketchControl.Sketch.Objects;
                     ser.Serialize(writer, b);
-                    writer.Close();
+                    writer.Close();*/
                 //}
                 //catch (Exception ex)
                 //{
@@ -244,33 +275,26 @@ namespace SketchEditor
             d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
             if (d.ShowDialog() == DialogResult.OK)
             {
-                try
+                string fileName = d.FileName;
+                Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
+                switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
                 {
-                    string fileName = d.FileName; 
-                    Bitmap img = this.sketchControl.Sketch.Bitmap;//Get bitmap
-                    switch (System.IO.Path.GetExtension(fileName))//Save op basis van extensie
-                     {
                     case (".Png"):
-                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
-                            break;
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
+                        break;
                     case (".jpg"):
-                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                            break;
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
                     case (".Bmp"):
-                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
-                            break;
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                        break;
                     default:
-                            fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
-                            img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                            break;
-                   }                   
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("test saveAsImage failed");
+                        fileName = fileName + ".jpg"; //geef een extensie aan nieuwe files
+                        img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
                 }
             }
-        }
+        }     
 
         private void CreateActionButtons(String[] kleuren)
         {   
