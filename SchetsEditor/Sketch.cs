@@ -34,6 +34,7 @@ namespace SketchEditor
         }
         public void AddObject(ISketchObject obj) {
             objects.Add(obj);
+            IsketchlistChanged = true;// geeft aan dat de ISketchList verandert is
         }
         public void Draw(Graphics g) {
             Graphics bitmapGraphics = Graphics.FromImage(bitmap);
