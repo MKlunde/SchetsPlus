@@ -161,8 +161,12 @@ namespace SketchEditor
             {
                 RadioButton b = new RadioButton();
                 b.Appearance = Appearance.Button;
-                b.Size = new Size(45, 62);
-                b.Location = new Point(10, 10 + t * 62);
+                b.FlatStyle = FlatStyle.Flat;
+                b.Font = new Font("Tahoma", 8);
+                b.FlatAppearance.BorderSize = 0;
+                b.FlatAppearance.CheckedBackColor = Color.FromArgb(255, 200, 200, 200);
+                b.Size = new Size(45, 60);
+                b.Location = new Point(10, 10 + t * 60);
                 b.Tag = tool;
                 b.Text = tool.ToString();
                 b.Image = (Image)resourceManager.GetObject(tool.ToString());

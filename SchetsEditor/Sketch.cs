@@ -63,12 +63,11 @@ namespace SketchEditor
             }
         }
         public ISketchObject ObjectOnLocation(Point p) {
-            ISketchObject result = null;
             for (int i = objects.Count-1; i >= 0; i--) {
                 if (objects[i].IsOnLocation(p))
-                    result = objects[i];
+                    return objects[i];
             }
-            return result;
+            return null;
         }
 
 

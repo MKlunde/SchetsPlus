@@ -63,9 +63,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ellips {
+        internal static System.Drawing.Bitmap Ellips {
             get {
-                object obj = ResourceManager.GetObject("ellips", resourceCulture);
+                object obj = ResourceManager.GetObject("Ellips", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ellipsV {
+        internal static System.Drawing.Bitmap EllipsV {
             get {
-                object obj = ResourceManager.GetObject("ellipsV", resourceCulture);
+                object obj = ResourceManager.GetObject("EllipsV", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gum {
+        internal static System.Drawing.Bitmap Gum {
             get {
-                object obj = ResourceManager.GetObject("gum", resourceCulture);
+                object obj = ResourceManager.GetObject("Gum", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap kader {
+        internal static System.Drawing.Bitmap Kader {
             get {
-                object obj = ResourceManager.GetObject("kader", resourceCulture);
+                object obj = ResourceManager.GetObject("Kader", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lijn {
+        internal static System.Drawing.Bitmap Lijn {
             get {
-                object obj = ResourceManager.GetObject("lijn", resourceCulture);
+                object obj = ResourceManager.GetObject("Lijn", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pen {
+        internal static System.Drawing.Bitmap Pen {
             get {
-                object obj = ResourceManager.GetObject("pen", resourceCulture);
+                object obj = ResourceManager.GetObject("Pen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,9 +123,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap tekst {
+        internal static System.Drawing.Bitmap Tekst {
             get {
-                object obj = ResourceManager.GetObject("tekst", resourceCulture);
+                object obj = ResourceManager.GetObject("Tekst", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,9 +133,9 @@ namespace SchetsEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap vlak {
+        internal static System.Drawing.Bitmap Vlak {
             get {
-                object obj = ResourceManager.GetObject("vlak", resourceCulture);
+                object obj = ResourceManager.GetObject("Vlak", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -35,7 +35,7 @@ namespace SketchEditor
 
     public class TextTool : StartingPointTool
     {
-        public override string ToString() { return "tekst"; }
+        public override string ToString() { return "Tekst"; }
 
         public override void MouseDrag(SketchControl s, Point p) { }
 
@@ -109,7 +109,7 @@ namespace SketchEditor
 
     public class EllipseTool : DualPointTool
     {
-        public override string ToString() { return "ellips"; }
+        public override string ToString() { return "Ellips"; }
 
         //public override void BeingDrawn(Graphics g, Point p1, Point p2)
         //{
@@ -123,7 +123,7 @@ namespace SketchEditor
 
     public class FilledEllipseTool : EllipseTool
     {
-        public override string ToString() { return "ellipsV"; }
+        public override string ToString() { return "EllipsV"; }
 
         //public override void Finish(SketchControl s, Point p1, Point p2)
         //{
@@ -137,7 +137,7 @@ namespace SketchEditor
 
     public class RectangleTool : DualPointTool
     {
-        public override string ToString() { return "kader"; }
+        public override string ToString() { return "Kader"; }
 
         //public override void BeingDrawn(Graphics g, Point p1, Point p2)
         //{
@@ -151,7 +151,7 @@ namespace SketchEditor
     
     public class FilledRectangleTool : RectangleTool
     {
-        public override string ToString() { return "vlak"; }
+        public override string ToString() { return "Vlak"; }
 
         //public override void Finished(SketchControl s, Point p1, Point p2)
         //{
@@ -165,7 +165,7 @@ namespace SketchEditor
 
     public class LineTool : DualPointTool
     {
-        public override string ToString() { return "lijn"; }
+        public override string ToString() { return "Lijn"; }
 
         //public override void BeingDrawn(Graphics g, Point p1, Point p2)
         //{
@@ -179,7 +179,7 @@ namespace SketchEditor
 
     public class PenTool : LineTool
     {
-        public override string ToString() { return "pen"; }
+        public override string ToString() { return "Pen"; }
 
         public override void MouseDrag(SketchControl s, Point p)
         {
@@ -194,7 +194,7 @@ namespace SketchEditor
     
     public class EraserTool : PenTool
     {
-        public override string ToString() { return "gum"; }
+        public override string ToString() { return "Gum"; }
 
         public override void MouseDown(SketchControl s, Point p) {
             EraseObjectOnLocation(s, p);
