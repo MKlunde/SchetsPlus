@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
+using System.IO;
 
 namespace SketchEditor
 {
@@ -234,8 +235,6 @@ namespace SketchEditor
             }
         }
 
-
-
         public void SaveProject()
         {
             SaveFileDialog d = new SaveFileDialog(); //selecteer file
@@ -267,10 +266,9 @@ namespace SketchEditor
             SaveFileDialog d = new SaveFileDialog(); // Selecteer file
             // Instellingen dialog
             d.InitialDirectory = "./";
-            d.Title = "Opslaan als afbeelding...";
+            d.Title = "Exporteer afbeelding...";
             d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
+            if (d.ShowDialog() == DialogResult.OK) {
                 string fileName = d.FileName;
                 Bitmap img = sketchControl.Sketch.Bitmap; // Get bitmap
                 switch (System.IO.Path.GetExtension(fileName)) // Save op basis van extensie

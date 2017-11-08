@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 namespace SketchEditor
 {
@@ -11,6 +10,7 @@ namespace SketchEditor
         private List<ISketchObject> objects;
         private Bitmap bitmap;
         private SketchControl s;
+        private Image loadedImage;//Houd de achtergrond tekenig bij
 
         private bool IsketchlistChanged = false; // Houdt bij of de list veranderd is
         
@@ -18,6 +18,8 @@ namespace SketchEditor
             get { return IsketchlistChanged; }
             set { IsketchlistChanged = value; }
         }
+
+        public Image ImageLoad { set { loadedImage = value; } }
 
         public List<ISketchObject> Objects {
             get { return objects; }
@@ -42,7 +44,14 @@ namespace SketchEditor
             for (int i = 0; i < objects.Count; i++) {
                 objects[i].Draw(bitmapGraphics);
             }
-            g.DrawImage(bitmap, 0, 0);
+            if (loadedImage != null)
+            {
+                g.DrawImage(loadedImage, 0, 0);
+                bitmap.MakeTransparent(Color.White);//Maak de bitmap doorzichtig waardoor de achtergrond zichtbaar is.
+                g.DrawImage(bitmap, 0, 0);
+            }
+            else
+                g.DrawImage(bitmap, 0, 0);
         }
         public void Resize(Size sz) {
             if (sz.Width > bitmap.Size.Width || sz.Height > bitmap.Size.Height) {

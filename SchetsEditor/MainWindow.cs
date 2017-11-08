@@ -30,6 +30,7 @@ namespace SketchEditor
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Exporteren als afbeelding...", null, SaveAsImage) { Enabled = false, ShortcutKeyDisplayString = "Ctrl+E", ShortcutKeys = Keys.Control | Keys.E });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als project...", null, Save) { Enabled = false, ShortcutKeyDisplayString = "Ctrl+S", ShortcutKeys = Keys.Control | Keys.S });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Project openen...", null, LoadProject) { ShortcutKeyDisplayString = "Ctrl+O", ShortcutKeys = Keys.Control | Keys.O });
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Afbeelding openen...", null, LoadImage)  { ShortcutKeyDisplayString = "Ctrl+g", ShortcutKeys = Keys.Control | Keys.O });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false, ShortcutKeyDisplayString = "Ctrl+W", ShortcutKeys = Keys.Control | Keys.W });
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("SketchPlus Afsluiten", null, Exit) { ShortcutKeyDisplayString = "Ctrl+Q", ShortcutKeys = Keys.Control | Keys.Q });
 
@@ -184,6 +185,30 @@ namespace SketchEditor
             }
         }
 
+        private void LoadImage(object sender, EventArgs e)
+        {
+            SketchWin activeSketchWin = ActiveMdiChild as SketchWin;
+            OpenFileDialog d = new OpenFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Laad afbeelding...";
+            d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                SketchControl s;
+                if (activeSketchWin.SketchControl.Sketch.Objects.Count == 0)
+                    s = activeSketchWin.SketchControl;
+                else
+                    s = ReturnNewSketchWin().SketchControl;
+                string fileName = d.FileName;
+                Image i = Image.FromFile(fileName);
+                s.Sketch.ImageLoad = i;
+                s.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+                s.Sketch.Clear();
+                s.Invalidate();
+            }
+        }
+
         private void Save(object sender, EventArgs e)
         {
             SketchWin sketchWin = ActiveMdiChild as SketchWin;
@@ -198,7 +223,13 @@ namespace SketchEditor
                 sketchWin.ExportImage();
         }
 
-        private void Exit(object sender, EventArgs e) {
+        private void Exit(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil doorgaan?", "Alert", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
             Close();
         }
     }
