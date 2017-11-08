@@ -28,6 +28,7 @@ namespace SketchEditor
             fileMenu = new ToolStripMenuItem("Bestand");
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Nieuw", null, NewSketchWin));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Project laden...", null, LoadProject));
+            fileMenu.DropDownItems.Add(new ToolStripMenuItem("Afbeelding laden...", null, LoadImage));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als project...", null, Save));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Opslaan als afbeelding...", null, SaveAsImage));
             fileMenu.DropDownItems.Add(new ToolStripMenuItem("Sluiten", null, CloseActiveSketchWin) { Enabled = false });
@@ -98,7 +99,12 @@ namespace SketchEditor
             SketchWin s = ActiveMdiChild as SketchWin;
             s.LoadProject();
         }
-        
+        private void LoadImage(object sender, EventArgs e)
+        {
+            SketchWin s = ActiveMdiChild as SketchWin;
+            s.LoadImage();
+        }
+
         private void Save(object sender, EventArgs e)
         {
             SketchWin s = ActiveMdiChild as SketchWin;
@@ -111,7 +117,13 @@ namespace SketchEditor
             s.StoreImage();
         }
 
-        private void Exit(object sender, EventArgs e) {
+        private void Exit(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil doorgaan?", "Alert", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
             Close();
         }
     }

@@ -5,9 +5,6 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
 using System.IO;
-using System.Xml.Serialization;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SketchEditor
 {
@@ -271,33 +268,6 @@ namespace SketchEditor
                 
             }
         }
-            
-        
-        public void Store()
-        {
-            SaveFileDialog d = new SaveFileDialog(); //selecteer file
-            // instellingen dialog
-            d.InitialDirectory = "./";
-            d.Title = "Opslaan als project...";
-            d.Filter = "Sketch files (*.sketch)|*.sketch";
-            if (d.ShowDialog() == DialogResult.OK)
-            {
-                string filename = d.FileName;
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename))
-                {
-                    foreach(ISketchObject obj in this.sketchControl.Sketch.Objects)
-                    {
-                        file.WriteLine(obj.Name);
-                        file.WriteLine(obj.StartingPoint);
-                        file.WriteLine(obj.EndingPoint);
-                        file.WriteLine(obj.Brush);
-                        file.WriteLine(obj.Text);
-                        //file.WriteLine(obj.rotation);
-                    }
-                }
-                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
-            }
-        }
 
         public void StoreImage()
         {
@@ -328,6 +298,59 @@ namespace SketchEditor
                 }
             }
             this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+        }
+    
+        public void Store()
+        {
+            SaveFileDialog d = new SaveFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Opslaan als project...";
+            d.Filter = "Sketch files (*.sketch)|*.sketch";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                string filename = d.FileName;
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(filename))
+                {
+                    foreach(ISketchObject obj in this.sketchControl.Sketch.Objects)
+                    {
+                        file.WriteLine(obj.Name);
+                        file.WriteLine(obj.StartingPoint);
+                        file.WriteLine(obj.EndingPoint);
+                        file.WriteLine(obj.Brush);
+                        file.WriteLine(obj.Text);
+                        //file.WriteLine(obj.rotation);
+                    }
+                }
+                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+            }
+        }
+
+        public void LoadImage()
+        {
+            if (this.sketchControl.Sketch.listChanged)
+            {
+                DialogResult dialogResult = MessageBox.Show("Er zijn niet opgeslagen veranderingen. Weet je zeker dat je wil doorgaan?", "Alert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            OpenFileDialog d = new OpenFileDialog(); //selecteer file
+            // instellingen dialog
+            d.InitialDirectory = "./";
+            d.Title = "Laad afbeelding...";
+            d.Filter = "Afbeeldingsbestanden (*.Bmp, .*Png, *.jpg) | *.Bmp; *.Png; *jpg";
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = d.FileName;
+                Image i = Image.FromFile(fileName);
+                this.sketchControl.Sketch.ImageLoad = i;
+                this.sketchControl.Sketch.listChanged = false;//geeft aan dat veranderingen zijn opgeslagen
+                this.sketchControl.Sketch.Clear();
+                this.sketchControl.Invalidate();
+                //fileName.Close();
+            }
         }     
 
         private void CreateActionButtons(String[] kleuren)
